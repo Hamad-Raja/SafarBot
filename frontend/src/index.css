@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset (simple) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* OPTION A: Body locked, app (#root) scrolls */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply font-sans text-slate-800;
+  /* background: #000;  /*  your theme stays black */
+  overflow: hidden;    /* body locked */
+}
+
+/* whole website scroll here */
+#root {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Your existing hero styles (unchanged) */
+.hero-bg {
+  background-image: url("/bus-hero.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-overlay {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.25)
+  );
+}

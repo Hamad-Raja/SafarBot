@@ -1,0 +1,961 @@
+text,intent
+kya hal hai,greeting
+hello bot,greeting
+seat choose karo 5,select_seat
+commands batao,help
+aoa,greeting
+salam,greeting
+my bookings show karo,my_bookings
+features list karo,help
+window seat do 4,select_seat
+salam,greeting
+kal wali bokng cancel,cancel_booking
+jazz cash se payment,payment
+main jazzcash pay karunga,payment
+Dera Ghazi Khan to sukkur tomorrow buses,search_routes
+front wali 3 seats chahiye,select_seat
+please Sukkur se Nowshera ka schedule bata do next friday,search_routes
+payment jazzcash kar do,payment
+booking ka tareeqa batao,help
+support,help
+jazzcash se pay karna hai,payment
+kya kya kar sakte ho,help
+confirm kar do bhy,book_route
+routes show karo Jhelum -> Gujranwala next friday 12 pm,search_routes
+kal wali booking cancel,cancel_booking
+mujhe help chahiye,help
+aoa,greeting
+bhai 4 seats select kr do,select_seat
+mere booked routes bata do,my_bookings
+jazzcash se pay karna hai,payment
+payment method cash,payment
+cancel booking please,cancel_booking
+pehli wali confirm karo,book_route
+salam,greeting
+hello bot,greeting
+meri reservation cancel krni hai,cancel_booking
+next monday Multan se Faisalabad ki bus dekhao 11 pm,search_routes
+4 seat booking,select_seat
+mere booked routes bata do,my_bookings
+Muzaffarabad to Quetta next monday buses,search_routes
+good morning,greeting
+hey,greeting
+bhai Karachi sy Quetta jana hai aaj,search_routes
+Baloch Transport 3:30pm wali reserve kar do,book_route
+pay cash,payment
+mere tickets list karo,my_bookings
+kya kya kar sakte ho,help
+Skyways ticket confirm,book_route
+please Rawalpindi se peshawar ka schedule bata do next friday,search_routes
+confirm kar do bhai,book_route
+please Okara se Jhelum ka schedule bata do next monday 8 pm,search_routes
+mere booked routes bata do,my_bookings
+meri booking cancel karo,cancel_booking
+cancel booking please,cancel_booking
+Gujrat to Mardan day after tomorrow buses,search_routes
+cash payment,payment
+mere tickets list karo,my_bookings
+booking remove karo,cancel_booking
+1 seats chahiye,select_seat
+payment cash kar do,payment
+commands batao,help
+aoa,greeting
+Skyways ki booking kar do,book_route
+Nowshera to Mardan tomorrow buses,search_routes
+Faisal Movers ticket confirm,book_route
+mere tickets list karo,my_bookings
+meri resyrvation cancel krni hy,cancel_booking
+option 1 book karo,book_route
+meri reservation cancel krni hai,cancel_booking
+meri bokng dikhao,my_bookings
+window seat do 2,select_seat
+guide me,help
+meri reservation cancel krni hai,cancel_booking
+3 seat booking,select_seat
+hello,greeting
+mere tickets list karo,my_bookings
+hi safarbot,greeting
+kya parso Multan se Skardu bus mil jayegi 6 baje,search_routes
+booking remove karo,cancel_booking
+mere tickets list karo,my_bookings
+booking history chahiye,my_bookings
+aisle seat 1 kar do,select_seat
+assalam o alaikum,greeting
+Dera Ghazi Khan Muzaffarabad route options day after tomorrow,search_routes
+front wali 1 syats chahiye,select_seat
+mujhe Kasur se Peshawar jana hai aaj,search_routes
+my bookings show karo,my_bookings
+cancel my ticket,cancel_booking
+pehli wali confirm karo,book_route
+5 seat booking,select_seat
+ticket details dikhao,my_bookings
+front wali 2 syats chahiye,select_seat
+front wali 4 seats chaiye,select_seat
+ticket cancel kar do,cancel_booking
+cash on counter,payment
+ticket cancel kar do,cancel_booking
+4 seat booking,select_seat
+commands batao,help
+hi safarbot,greeting
+payment cash kar do,payment
+muja 2 seat select karni hai,select_seat
+features list karo,help
+Gilgit to Mardan today 11 pm buses,search_routes
+5 back seats chahiye,select_seat
+haan yeh wali book karo,book_route
+my ticket status,my_bookings
+assalam o alaikum,greeting
+hi,greeting
+meri reservation cancel krni hai,cancel_booking
+kya aaj Sheikhupura se Rawalpindi bus mil jayegi,search_routes
+salam,greeting
+bhai 1 seats select kr do,select_seat
+guide me,help
+confirm kar do bhai,book_route
+main jazzcash pay karunga,payment
+how to usy safarbot,help
+Skyways ki booking kar do,book_route
+cash payment,payment
+trip cancel kar do,cancel_booking
+payment method cash,payment
+aik ticket Faisalabad se Mardan today,search_routes
+seat choose karo 5,select_seat
+routes show karo Bahawalpur -> sheikhupura day after tomorrow,search_routes
+hi safarbot,greeting
+bhai 5 seats select kr do,select_seat
+meri booking dikhao,my_bookings
+payment jazzcash kar do,payment
+meri latest booking kya hai,my_bookings
+hello,greeting
+confirm kar do bhai,book_route
+4 tickets ki seats reserve karo,select_seat
+ticket details dikhao,my_bookings
+Faisal Movers ticket confirm,book_route
+good morning,greeting
+option 1 book karo,book_route
+hi,greeting
+meri reservation cancel krni hai,cancel_booking
+haan yeh wali book karo,book_route
+my bokngs show karo,my_bookings
+my ticket status,my_bookings
+booking history chahiye,my_bookings
+aisle seat 5 kar do,select_seat
+ticket cancel kar do,cancel_booking
+my bookings show karo,my_bookings
+5 tickets ki seats reserve karo,select_seat
+5 seats confirm karo,select_seat
+payment jazzcash kar do,payment
+3 front seats chahiye,select_seat
+payment jazzcash kar do,payment
+haan yeh wali book karo,book_route
+bhai 1 seats select kr do,select_seat
+cancel bokng please,cancel_booking
+support,help
+payment jazzcash kar do,payment
+Sialkot Skardu route options aaj 1 baje,search_routes
+main cash pay karunga,payment
+please Quetta se kasur ka schedule bata do kal,search_routes
+mujhe 3 seat select karni hai,select_seat
+hi,greeting
+option 1 book karo,book_route
+window seat do 2,select_seat
+hi,greeting
+Mardan to gujranwala parso buses,search_routes
+bookings ka record,my_bookings
+4 seat booking,select_seat
+ticket details dikhao,my_bookings
+commands batao,help
+hello,greeting
+Muzaffarabad to Mardan aaj buses,search_routes
+day after tomorrow okara se lhr ki bus dekhao,search_routes
+kya tomorrow Peshawar se Gilgit bus mil jayegi,search_routes
+2 seat booking,select_seat
+pehli wali confirm karo,book_route
+features list karo,help
+kal wali bokng cancel,cancel_booking
+bookings ka record,my_bookings
+Multan Mirpur route options next monday 10 pm,search_routes
+kal wali booking cancel,cancel_booking
+Mirpur sy Okara wali bus tomorrow 7 baje,search_routes
+Daewoo ticket confirm,book_route
+Okara Muzaffarabad route options day after tomorrow 4 am,search_routes
+meri reservations show karo,my_bookings
+Mardan Karachi route options parso,search_routes
+aik ticket Mardan se Islamabad today 2 pm,search_routes
+2 seats Skyways me book karo,book_route
+2 tickets ki seats reserve karo,select_seat
+2 back seats chahiye,select_seat
+cancel booking please,cancel_booking
+Faisalabad to Gujranwala parso buses,search_routes
+mujhe help chahiye,help
+commands batao,help
+confirm kar do bhai,book_route
+Abbottabad to Quetta day after tomorrow buses,search_routes
+payment cash kar do,payment
+ticket details dikhao,my_bookings
+commands batao,help
+option 1 book karo,book_route
+Baloch Transport ki booking kar do,book_route
+hello bot,greeting
+mujhe help chahiye,help
+jazz cash se payment,payment
+Mardan to Peshawar next monday 7 pm buses,search_routes
+front wali 2 seats chahiye,select_seat
+window syat do 1,select_seat
+features list karo,help
+cancel my ticket,cancel_booking
+bhai 2 seats select kr do,select_seat
+hello,greeting
+Sukkur Sheikhupura route options next monday,search_routes
+jazz cash se payment,payment
+kya hal hai,greeting
+mere tickets list karo,my_bookings
+cash se pay karna hai,payment
+front wali 1 seats chahiye,select_seat
+front wali 5 seats chaiye,select_seat
+my ticket status,my_bookings
+booking remove karo,cancel_booking
+Skardu Sheikhupura route options kal,search_routes
+meri ticket cancel,cancel_booking
+meri booking dikhao,my_bookings
+pay jazzcash,payment
+kya hal hai,greeting
+2 seats Faisal Movers me book karo,book_route
+bhai 3 seats select kr do,select_seat
+meri reservation cancel krni hai,cancel_booking
+hello,greeting
+cash se pay karna hai,payment
+2 tickets ki seats reserve karo,select_seat
+Gujrat to Gilgit next friday buses,search_routes
+Sialkot se Skardu wali bus next friday,search_routes
+meri reservation cancel krni hai,cancel_booking
+kya next monday Peshawar se rwp bus mil jayegi,search_routes
+kya kal Mardan se isb bus mil jayegi 4 pm,search_routes
+Baloch Transport 3:30pm wali resyrve kar do,book_route
+bhai Hyderabad sy Kasur jana hai aaj 10 baje,search_routes
+cash payment,payment
+option 1 book karo,book_route
+main cash pay karunga,payment
+support,help
+Multan to Faisalabad tomorrow busys,search_routes
+meri booking dikhao,my_bookings
+good morning,greeting
+booking history chahiye,my_bookings
+meri bokng cancel karo,cancel_booking
+features list karo,help
+seat choose karo 3,select_seat
+good morning,greeting
+Faisal Movers  wali reserve kar do,book_route
+hi,greeting
+bhai 3 seats select kr do,select_seat
+kya day after tomorrow Sargodha se Nowshera bus mil jayegi,search_routes
+guide me,help
+ticket cancel kar do,cancel_booking
+meri reservation cancel krni hai,cancel_booking
+main jazzcash pay karunga,payment
+Faisal Movers ki booking kar do,book_route
+cash on counter,payment
+meri bokng cancel karo,cancel_booking
+cash payment,payment
+payment method cash,payment
+commands batao,help
+meri ticket cancel,cancel_booking
+meri latest booking kya hy,my_bookings
+ticket cancel kar do,cancel_booking
+aoa,greeting
+jazzcash use karo,payment
+pay cash,payment
+Baloch Transport ki bokng kar do,book_route
+bhai 3 seats select kr do,select_seat
+good morning,greeting
+aisle syat 5 kar do,select_seat
+how to use safarbot,help
+is route ko book karna hai,book_route
+window seat do 1,select_seat
+kya next monday Dera Ghazi Khan se Mirpur bus mil jayegi,search_routes
+help,help
+window seat do 4,select_seat
+meri ticket cancel,cancel_booking
+bhai 1 seats select kr do,select_seat
+kal wali bokng cancel,cancel_booking
+hello bot,greeting
+confirm kar do bhai,book_route
+is route ko book karna hai,book_route
+my bookings show karo,my_bookings
+1 seat booking,select_seat
+booking ka tareeqa batao,help
+front wali 2 syats chahiye,select_seat
+meri bokng cancel karo,cancel_booking
+2 seats Baloch Transport me book karo,book_route
+meri booking cancel karo,cancel_booking
+how to use safarbot,help
+bookings ka record,my_bookings
+my ticket status,my_bookings
+refund chahiye cancel karo,cancel_booking
+mujhe Mardan se Multan jana hai kal 11 baje,search_routes
+Nowshera Sialkot route options today 7 am,search_routes
+features list karo,help
+ticket cancel kar do,cancel_booking
+meri bokng cancel karo,cancel_booking
+1 seats chaiye,select_seat
+is route ko book karna hai,book_route
+hi safarbot,greeting
+is route ko book karna hai,book_route
+bookings ka record,my_bookings
+cash payment,payment
+kya kya kar sakte ho,help
+hi,greeting
+mujhe help chahiye,help
+ticket details dikhao,my_bookings
+main jazzcash pay karunga,payment
+Mirpur Gilgit route options next friday 9 am,search_routes
+muja 1 seat select karni hai,select_seat
+4 window seats chahiye,select_seat
+next friday Dera Ghazi Khan se Faisalabad ki bus dekhao 9 baje,search_routes
+support,help
+mere booked routes bata do,my_bookings
+aoa,greeting
+pleasy Rawalpindi sy Faisalabad ka schedule bata do next monday 8 baje,search_routes
+mujhe Mirpur se Gilgit jana hai kal 10 am,search_routes
+please Abbottabad se Karachi ka schedule bata do next monday,search_routes
+bookings ka record,my_bookings
+1 middle seats chahiye,select_seat
+meri latest bokng kya hai,my_bookings
+pay cash,payment
+kya hal hai,greeting
+my bokngs show karo,my_bookings
+commands batao,help
+Gujranwala se Nowshera wali bus tomorrow 5 am,search_routes
+booking history chahiye,my_bookings
+hey,greeting
+meri booking cancel karo,cancel_booking
+main jazzcash pay karunga,payment
+commands batao,help
+5 middle seats chahiye,select_seat
+cash on counter,payment
+cash payment,payment
+cash se pay karna hai,payment
+2 seats Baloch Transport me book karo,book_route
+seat choose karo 3,select_seat
+front wali 5 seats chahiye,select_seat
+confirm kar do bhai,book_route
+kya kya kar sakte ho,help
+mujhe 2 seat select karni hai,select_seat
+Daewoo ki booking kar do,book_route
+Skyways wali book kar do,book_route
+good morning,greeting
+hello,greeting
+lhr to Karachi next friday 1 am busys,search_routes
+mere booked routes bata do,my_bookings
+jazz cash se payment,payment
+cash payment,payment
+mere tickets list karo,my_bookings
+my ticket status,my_bookings
+mujhe help chahiye,help
+jazz cash se payment,payment
+haan yeh wali book karo,book_route
+front wali 1 seats chahiye,select_seat
+jazz cash sy payment,payment
+booking history chahiye,my_bookings
+meri reservation cancel krni hai,cancel_booking
+hey,greeting
+aoa,greeting
+pay cash,payment
+meri reservations show karo,my_bookings
+hello bot,greeting
+how to use safarbot,help
+mere booked routes bata do,my_bookings
+meri ticket cancel,cancel_booking
+muja 5 seat select karni hai,select_seat
+jazz cash sy payment,payment
+hello,greeting
+pehli wali confirm karo,book_route
+ticket cancel kar do,cancel_booking
+commands batao,help
+payment method cash,payment
+aisle seat 4 kar do,select_seat
+hello,greeting
+trip cancel kar do,cancel_booking
+Dera Ghazi Khan to Muzaffarabad next friday 9 am buses,search_routes
+seat choose karo 2,select_seat
+booking ka tareeqa batao,help
+meri ticket cancel,cancel_booking
+muja Quetta se Swat jana hai next friday,search_routes
+hi safarbot,greeting
+jazz cash se payment,payment
+option 1 book karo,book_route
+Daewoo ki booking kar do,book_route
+window seat do 1,select_seat
+4 middle syats chahiye,select_seat
+meri booking dikhao,my_bookings
+kya hal hai,greeting
+what can you do,help
+hey,greeting
+my bookings show karo,my_bookings
+mere booked routes bata do,my_bookings
+aik ticket mirpur se khi day after tomorrow 7 pm,search_routes
+commands batao,help
+2 seat booking,select_seat
+commands batao,help
+muja Gilgit se Peshawar jana hai next monday,search_routes
+Hyderabad se Rawalpindi wali bus tomorrow,search_routes
+bhai faisalabad sy Sialkot jana hai tomorrow,search_routes
+what can you do,help
+muja Kasur se Hyderabad jana hai tomorrow 11 baje,search_routes
+meri ticket cancel,cancel_booking
+Dera Ghazi Khan to Abbottabad next friday 10 baje buses,search_routes
+cash payment,payment
+aoa,greeting
+2 seats Baloch Transport me book karo,book_route
+good morning,greeting
+payment method cash,payment
+meri reservations show karo,my_bookings
+booking history chahiye,my_bookings
+hi safarbot,greeting
+aisle seat 4 kar do,select_seat
+ticket cancel kar do,cancel_booking
+how to use safarbot,help
+kya parso Peshawar sy Sheikhupura bus mil jayegi,search_routes
+mere tickets list karo,my_bookings
+hi safarbot,greeting
+jazz cash se payment,payment
+booking history chahiye,my_bookings
+meri booking dikhao,my_bookings
+mujhe 3 seat select karni hai,select_seat
+isb se Mirpur wali bus next friday 4 pm,search_routes
+support,help
+cancel my ticket,cancel_booking
+kya hal hai,greeting
+payment jazzcash kar do,payment
+option 1 book karo,book_route
+good morning,greeting
+front wali 1 seats chahiye,select_seat
+cash on counter,payment
+my ticket status,my_bookings
+is route ko book karna hai,book_route
+guide me,help
+mere booked routes bata do,my_bookings
+meri reservation cancel krni hai,cancel_booking
+Dera Ghazi Khan Nowshera route options tomorrow 4 pm,search_routes
+booking remove karo,cancel_booking
+meri reservation cancel krni hai,cancel_booking
+Sialkot se Quetta wali bus today,search_routes
+main cash pay karunga,payment
+meri ticket cancel,cancel_booking
+Daewoo wali book kar do,book_route
+ticket cancel kar do,cancel_booking
+cash use karo,payment
+my bookings show karo,my_bookings
+how to use safarbot,help
+pehli wali confirm karo,book_route
+support,help
+features list karo,help
+Baloch Transport ki bokng kar do,book_route
+bookings ka record,my_bookings
+kya kya kar sakte ho,help
+salam,greeting
+aik ticket quetta se Sukkur next friday 5 am,search_routes
+kya hal hai,greeting
+is route ko book karna hai,book_route
+mere tickets list karo,my_bookings
+2 seat booking,select_seat
+assalam o alaikum,greeting
+cash payment,payment
+Skyways 5 pm wali reserve kar do,book_route
+mujhe help chahiye,help
+kya hal hai,greeting
+pehli wali confirm karo,book_route
+hi,greeting
+2 seat booking,select_seat
+pehli wali confirm karo,book_route
+Baloch Transport wali book kar do,book_route
+routes show karo Okara -> Gujrat next friday 6 baje,search_routes
+support,help
+hi safarbot,greeting
+aik ticket Rahim Yar Khan se Faisalabad next monday,search_routes
+seat choose karo 1,select_seat
+refund chahiye cancel karo,cancel_booking
+ticket cancel kar do,cancel_booking
+cash on counter,payment
+payment cash kar do,payment
+meri booking cancel karo,cancel_booking
+seat choose karo 2,select_seat
+aisle seat 3 kar do,select_seat
+mujhe Jhelum se hyderabad jana hai day after tomorrow,search_routes
+guide me,help
+bhai gilgit sy Rahim Yar Khan jana hai tomorrow 11 baje,search_routes
+support,help
+syat choosy karo 4,select_seat
+bokngs ka record,my_bookings
+confirm kar do bhai,book_route
+option 1 book karo,book_route
+booking ka tareeqa batao,help
+hi,greeting
+1 back seats chahiye,select_seat
+cancel my ticket,cancel_booking
+pay jazzcash,payment
+aoa,greeting
+kya hal hai,greeting
+trip cancel kar do,cancel_booking
+mujhe Sukkur se islamabad jana hai next friday,search_routes
+payment jazzcash kar do,payment
+bhai 2 seats select kr do,select_seat
+cash usy karo,payment
+please Peshawar se Bahawalpur ka schedule bata do kal,search_routes
+2 seats Faisal Movers me book karo,book_route
+booking ka tareeqa batao,help
+window syat do 3,select_seat
+my ticket status,my_bookings
+main jazzcash pay karunga,payment
+booking remove karo,cancel_booking
+cash se pay karna hai,payment
+3 window seats chahiye,select_seat
+aisle seat 1 kar do,select_seat
+meri resyrvation cancel krni hy,cancel_booking
+aisle seat 5 kar do,select_seat
+booking history chahiye,my_bookings
+bokng remove karo,cancel_booking
+what can you do,help
+bokng ka tareeqa batao,help
+cancel booking please,cancel_booking
+Multan to Bahawalpur aaj 10 pm buses,search_routes
+confirm kar do bhai,book_route
+what can you do,help
+haan yeh wali book karo,book_route
+bookings ka record,my_bookings
+2 seats confirm karo,select_seat
+assalam o alaikum,greeting
+hi safarbot,greeting
+mujhe help chahiye,help
+4 syat booking,select_seat
+3 syats chahiye,select_seat
+bhai 1 seats select kr do,select_seat
+is route ko book karna hai,book_route
+cancel my ticket,cancel_booking
+Faisal Movers ki booking kar do,book_route
+option 1 book karo,book_route
+mujhe 3 syat sylect karni hy,select_seat
+is route ko book karna hai,book_route
+meri latest booking kya hai,my_bookings
+mujhe 2 seat select karni hai,select_seat
+assalam o alaikum,greeting
+pehli wali confirm karo,book_route
+dera ghazi khan se Jhelum wali bus next monday,search_routes
+kya hal hai,greeting
+meri booking dikhao,my_bookings
+kya hal hai,greeting
+front wali 5 seats chahiye,select_seat
+1 tickets ki seats reserve karo,select_seat
+hi,greeting
+routes show karo Sialkot -> Rahim Yar Khan next monday 7 pm,search_routes
+cash on counter,payment
+cash se pay karna hai,payment
+jazzcash se pay karna hai,payment
+my bookings show karo,my_bookings
+jazzcash option select karo,payment
+payment cash kar do,payment
+2 syats Baloch Transport me book karo,book_route
+booking history chahiye,my_bookings
+please Bahawalpur se Mirpur ka schedule bata do day after tomorrow 1 baje,search_routes
+aoa,greeting
+cancel booking please,cancel_booking
+hi safarbot,greeting
+muja isb sy Gujranwala jana hy next friday 7 am,search_routes
+mere tickets list karo,my_bookings
+my bokngs show karo,my_bookings
+seat choose karo 5,select_seat
+hi,greeting
+cash on counter,payment
+ticket details dikhao,my_bookings
+my bookings show karo,my_bookings
+seat choose karo 2,select_seat
+refund chaiye cancel karo,cancel_booking
+jazzcash se pay karna hai,payment
+ticket cancel kar do,cancel_booking
+Peshawar to Karachi day after tomorrow busys,search_routes
+aisle seat 2 kar do,select_seat
+5 seat booking,select_seat
+good morning,greeting
+muja Gilgit se khi jana hai next friday 8 baje,search_routes
+features list karo,help
+jazzcash use karo,payment
+trip cancel kar do,cancel_booking
+my bookings show karo,my_bookings
+jazzcash use karo,payment
+muja help chaiye,help
+aik ticket Rahim Yar Khan se Hyderabad parso 4 baje,search_routes
+meri booking dikhao,my_bookings
+what can you do,help
+guide me,help
+is route ko book karna hai,book_route
+aisle seat 3 kar do,select_seat
+2 seats confirm karo,select_seat
+bhai 3 seats select kr do,select_seat
+features list karo,help
+front wali 5 syats chahiye,select_seat
+cancel my ticket,cancel_booking
+how to use safarbot,help
+kya hal hai,greeting
+mujhe Hyderabad se peshawar jana hai today,search_routes
+commands batao,help
+Faisal Movers ticket confirm,book_route
+cash payment,payment
+assalam o alaikum,greeting
+meri reservations show karo,my_bookings
+mujhe help chahiye,help
+mere booked routes bata do,my_bookings
+support,help
+Sargodha Multan route options parso 4 am,search_routes
+hello bot,greeting
+kal Quetta sy faisalabad ki bus dekhao 4 baje,search_routes
+help,help
+bookings ka record,my_bookings
+Kasur Mirpur route options tomorrow 6 am,search_routes
+haan yeh wali book karo,book_route
+features list karo,help
+how to use safarbot,help
+features list karo,help
+kya hal hai,greeting
+bhai Abbottabad sy Gilgit jana hai parso,search_routes
+confirm kar do bhai,book_route
+5 tickets ki seats reserve karo,select_seat
+features list karo,help
+Baloch Transport ticket confirm,book_route
+commands batao,help
+mere tickets list karo,my_bookings
+meri booking cancel karo,cancel_booking
+Faisal Movers ticket confirm,book_route
+please Mirpur se Skardu ka schedule bata do kal,search_routes
+payment jazzcash kar do,payment
+4 seats confirm karo,select_seat
+kya kya kar sakte ho,help
+cash on counter,payment
+jazzcash use karo,payment
+meri reservations show karo,my_bookings
+Jhelum Gujrat route options next monday 10 am,search_routes
+cash option sylect karo,payment
+bhai Quetta sy Gilgit jana hai tomorrow,search_routes
+pay cash,payment
+haan yeh wali book karo,book_route
+help,help
+please bahawalpur se Quetta ka schedule bata do tomorrow 4 am,search_routes
+Mardan se Gujranwala wali bus today,search_routes
+meri latest booking kya hai,my_bookings
+support,help
+salam,greeting
+Baloch Transport ticket confirm,book_route
+please Skardu se Quetta ka schedule bata do day after tomorrow,search_routes
+payment method jazzcash,payment
+bokngs ka record,my_bookings
+good morning,greeting
+Peshawar Skardu route options tomorrow 10 baje,search_routes
+guide me,help
+kal wali booking cancel,cancel_booking
+front wali 1 syats chahiye,select_seat
+my ticket status,my_bookings
+trip cancel kar do,cancel_booking
+Baloch Transport ticket confirm,book_route
+kya kal Jhelum se Multan bus mil jayegi,search_routes
+kya hal hai,greeting
+mere tickets list karo,my_bookings
+assalam o alaikum,greeting
+hi,greeting
+Baloch Transport ticket confirm,book_route
+bokngs ka record,my_bookings
+front wali 3 seats chahiye,select_seat
+main jazzcash pay karunga,payment
+5 seats chahiye,select_seat
+jazzcash use karo,payment
+guide me,help
+meri reservation cancel krni hai,cancel_booking
+trip cancel kar do,cancel_booking
+aoa,greeting
+kya kya kar sakte ho,help
+bokng remove karo,cancel_booking
+booking remove karo,cancel_booking
+bokng remove karo,cancel_booking
+booking history chahiye,my_bookings
+2 seats Daewoo me book karo,book_route
+help,help
+front wali 4 seats chahiye,select_seat
+jazzcash option select karo,payment
+guide me,help
+meri reservation cancel krni hai,cancel_booking
+mere tickets list karo,my_bookings
+ticket cancel kar do,cancel_booking
+5 seat booking,select_seat
+window seat do 3,select_seat
+meri ticket cancel,cancel_booking
+cash payment,payment
+meri latest booking kya hai,my_bookings
+Skyways ki booking kar do,book_route
+bhai Nowshera sy Sialkot jana hai kal 11 am,search_routes
+hello bot,greeting
+payment cash kar do,payment
+4 seats confirm karo,select_seat
+option 1 book karo,book_route
+cash option select karo,payment
+my bookings show karo,my_bookings
+hello,greeting
+meri ticket cancel,cancel_booking
+hi safarbot,greeting
+kya hal hai,greeting
+booking remove karo,cancel_booking
+kya next friday Gujrat se Rahim Yar Khan bus mil jayegi,search_routes
+please Rahim Yar Khan se Quetta ka schedule bata do tomorrow 3 am,search_routes
+Skyways ki booking kar do,book_route
+mujhe 3 seat select karni hai,select_seat
+my ticket status,my_bookings
+commands batao,help
+jazzcash option select karo,payment
+hello bot,greeting
+muja Quetta se Islamabad jana hai next friday,search_routes
+pehli wali confirm karo,book_route
+bokng remove karo,cancel_booking
+syat choosy karo 3,select_seat
+good morning,greeting
+mere booked routes bata do,my_bookings
+pleasy abbottabad sy Gujranwala ka schedule bata do kal,search_routes
+cancel my ticket,cancel_booking
+pay cash,payment
+features list karo,help
+window seat do 1,select_seat
+my ticket status,my_bookings
+good morning,greeting
+Skyways ticket confirm,book_route
+ticket details dikhao,my_bookings
+trip cancel kar do,cancel_booking
+cash on counter,payment
+kya hal hai,greeting
+mere tickets list karo,my_bookings
+meri reservations show karo,my_bookings
+booking remove karo,cancel_booking
+my bookings show karo,my_bookings
+booking ka tareeqa batao,help
+jazzcash se pay karna hai,payment
+Gujrat se Islamabad wali bus kal 12 am,search_routes
+support,help
+cash payment,payment
+Skyways ticket confirm,book_route
+hello bot,greeting
+good morning,greeting
+Nowshera se Gilgit wali bus next monday,search_routes
+Baloch Transport wali book kar do,book_route
+ticket cancel kar do,cancel_booking
+meri ticket cancel,cancel_booking
+routes show karo Gujranwala -> Rawalpindi tomorrow,search_routes
+cash use karo,payment
+cash on counter,payment
+cancel booking please,cancel_booking
+Faisal Movers wali book kar do,book_route
+day after tomorrow Abbottabad se Dera Ghazi Khan ki bus dekhao,search_routes
+payment cash kar do,payment
+how to usy safarbot,help
+meri latest booking kya hai,my_bookings
+mujhe help chahiye,help
+ticket cancel kar do,cancel_booking
+trip cancel kar do,cancel_booking
+pehli wali confirm karo,book_route
+kya aaj Gujrat se okara bus mil jayegi 10 am,search_routes
+routes show karo khi -> Sialkot tomorrow 3 baje,search_routes
+pehli wali confirm karo,book_route
+my ticket status,my_bookings
+mujhe help chahiye,help
+hello,greeting
+Islamabad se Peshawar wali bus kal 3 pm,search_routes
+aoa,greeting
+payment jazzcash kar do,payment
+mere tickets list karo,my_bookings
+aisle seat 1 kar do,select_seat
+payment jazzcash kar do,payment
+hey,greeting
+2 syats Faisal Movers me book karo,book_route
+support,help
+kal wali bokng cancel,cancel_booking
+commands batao,help
+payment method jazzcash,payment
+pehli wali confirm karo,book_route
+meri ticket cancel,cancel_booking
+Skyways ki bokng kar do,book_route
+payment method jazzcash,payment
+hi safarbot,greeting
+commands batao,help
+is route ko book karna hai,book_route
+good morning,greeting
+booking remove karo,cancel_booking
+cash on counter,payment
+my bookings show karo,my_bookings
+option 1 book karo,book_route
+bhai rwp sy Jhelum jana hai kal 11 pm,search_routes
+aisle seat 3 kar do,select_seat
+pay jazzcash,payment
+assalam o alaikum,greeting
+assalam o alaikum,greeting
+kya today Dera Ghazi Khan se Sialkot bus mil jayegi,search_routes
+cash use karo,payment
+meri ticket cancel,cancel_booking
+cash se pay karna hai,payment
+booking ka tareeqa batao,help
+guide me,help
+pehli wali confirm karo,book_route
+window seat do 3,select_seat
+is route ko book karna hai,book_route
+Swat to Peshawar parso 9 baje buses,search_routes
+option 1 book karo,book_route
+meri reservation cancel krni hai,cancel_booking
+commands batao,help
+ticket cancel kar do,cancel_booking
+jazzcash se pay karna hai,payment
+features list karo,help
+2 seats Baloch Transport me book karo,book_route
+payment method jazzcash,payment
+cancel my ticket,cancel_booking
+is route ko book karna hai,book_route
+Mirpur Dera Ghazi Khan route options parso,search_routes
+front wali 1 seats chahiye,select_seat
+Dera Ghazi Khan to quetta tomorrow 4 pm buses,search_routes
+booking history chahiye,my_bookings
+jazz cash se payment,payment
+2 seats Daewoo me book karo,book_route
+mujhe help chahiye,help
+Faisal Movers ticket confirm,book_route
+hello,greeting
+meri booking cancel karo,cancel_booking
+payment method cash,payment
+kya kya kar sakte ho,help
+routes show karo kasur -> Dera Ghazi Khan next monday 4 pm,search_routes
+hi safarbot,greeting
+2 seat booking,select_seat
+ticket details dikhao,my_bookings
+commands batao,help
+cash option select karo,payment
+confirm kar do bhai,book_route
+aoa,greeting
+pay cash,payment
+bokngs ka record,my_bookings
+confirm kar do bhai,book_route
+is route ko book karna hai,book_route
+2 seats Baloch Transport me book karo,book_route
+confirm kar do bhai,book_route
+4 seat booking,select_seat
+cash payment,payment
+booking ka tareeqa batao,help
+Sukkur se Gilgit wali bus next friday 6 pm,search_routes
+haan yeh wali book karo,book_route
+help,help
+mere booked routes bata do,my_bookings
+2 seats Baloch Transport me book karo,book_route
+mujhe help chahiye,help
+mujhe Skardu se Sheikhupura jana hai kal,search_routes
+jazzcash option sylect karo,payment
+kal wali bokng cancel,cancel_booking
+kya hal hai,greeting
+cancel booking please,cancel_booking
+3 seats confirm karo,select_seat
+kya hal hai,greeting
+mere booked routes bata do,my_bookings
+my ticket status,my_bookings
+booking remove karo,cancel_booking
+help,help
+help,help
+4 seats confirm karo,select_seat
+cancel my ticket,cancel_booking
+kya next monday Lahore se Hyderabad bus mil jayegi,search_routes
+support,help
+how to use safarbot,help
+payment cash kar do,payment
+mujhe help chahiye,help
+booking history chahiye,my_bookings
+guide me,help
+booking history chahiye,my_bookings
+is route ko book karna hy,book_route
+refund chahiye cancel karo,cancel_booking
+meri reservation cancel krni hai,cancel_booking
+features list karo,help
+seat choose karo 5,select_seat
+aoa,greeting
+help,help
+4 tickets ki seats reserve karo,select_seat
+guide me,help
+cash option select karo,payment
+bokng remove karo,cancel_booking
+aoa,greeting
+Hyderabad to Mirpur day after tomorrow 7 pm buses,search_routes
+window seat do 3,select_seat
+main jazzcash pay karunga,payment
+kya today Abbottabad se Dera Ghazi Khan bus mil jayegi 10 baje,search_routes
+bhai sialkot sy Peshawar jana hai today,search_routes
+my bookings show karo,my_bookings
+ticket cancel kar do,cancel_booking
+my bookings show karo,my_bookings
+booking history chahiye,my_bookings
+hi safarbot,greeting
+kal wali booking cancel,cancel_booking
+haan yeh wali book karo,book_route
+jazz cash sy payment,payment
+bhai Nowshera sy Mirpur jana hai aaj 8 pm,search_routes
+option 1 book karo,book_route
+my bokngs show karo,my_bookings
+mujhe 5 seat select karni hai,select_seat
+Hyderabad se Faisalabad wali bus next monday 10 baje,search_routes
+haan yeh wali book karo,book_route
+trip cancel kar do,cancel_booking
+hello bot,greeting
+Skyways ticket confirm,book_route
+please Quetta se sargodha ka schedule bata do kal 2 pm,search_routes
+ticket details dikhao,my_bookings
+ticket cancel kar do,cancel_booking
+assalam o alaikum,greeting
+kya hal hai,greeting
+Skyways wali book kar do,book_route
+support,help
+jazzcash option select karo,payment
+how to use safarbot,help
+cancel my ticket,cancel_booking
+confirm kar do bhai,book_route
+option 1 book karo,book_route
+my bokngs show karo,my_bookings
+Baloch Transport 3:30pm wali reserve kar do,book_route
+booking remove karo,cancel_booking
+hi,greeting
+haan yeh wali book karo,book_route
+cash se pay karna hai,payment
+jazz cash se payment,payment
+hello,greeting
+how to use safarbot,help
+1 syats confirm karo,select_seat
+jazz cash se payment,payment
+bhai Rahim Yar Khan sy Nowshera jana hai parso 6 baje,search_routes
+meri reservation cancel krni hai,cancel_booking
+mere booked routes bata do,my_bookings
+mere tickets list karo,my_bookings
+aik ticket Sukkur se Sialkot day after tomorrow,search_routes
+kal wali booking cancel,cancel_booking
+meri resyrvation cancel krni hy,cancel_booking
+meri latest booking kya hai,my_bookings
+confirm kar do bhai,book_route
+5 tickets ki seats reserve karo,select_seat
+help,help
+hi safarbot,greeting
+cash on counter,payment
+hello,greeting
+guide me,help
+confirm kar do bhai,book_route
+my bookings show karo,my_bookings
+bookings ka record,my_bookings
+2 seats Daewoo me book karo,book_route
+hello bot,greeting
+payment cash kar do,payment
+refund chahiye cancel karo,cancel_booking
+kal wali bokng cancel,cancel_booking
+guide me,help
+refund chahiye cancel karo,cancel_booking
+window seat do 4,select_seat
+cancel booking pleasy,cancel_booking
+aik ticket Rawalpindi sy Jhelum aaj,search_routes
+what can you do,help
+is route ko book karna hai,book_route
+jazzcash option sylect karo,payment
+assalam o alaikum,greeting
+mere tickets list karo,my_bookings
+meri reservation cancel krni hai,cancel_booking
