@@ -123,18 +123,7 @@ const Landing = () => {
                 Get started
               </button>
 
-              <button
-                onClick={() => navigate("/auth")}
-                className="w-full sm:w-auto px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/60 transition-shadow"
-              >
-                login now
-              </button>
-              <button
-                onClick={() => navigate("/auth")}
-                className="w-full sm:w-auto px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-cyan-500/30 hover:shadow-red-600 transition-shadow"
-              >
-                Register
-              </button>
+              
             </div>
           </div>
 
