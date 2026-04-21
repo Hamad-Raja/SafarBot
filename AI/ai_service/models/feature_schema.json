@@ -1,0 +1,21 @@
+{
+  "target": "delay_minutes",
+  "categorical": [
+    "operator",
+    "bus_type",
+    "from_city",
+    "to_city",
+    "condition"
+  ],
+  "numerical": [
+    "distance_km",
+    "planned_duration_min",
+    "departure_hour",
+    "temp_c",
+    "humidity",
+    "wind_ms",
+    "price",
+    "is_weekday",
+    "is_rush"
+  ]
+}

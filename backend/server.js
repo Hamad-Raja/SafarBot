@@ -18,6 +18,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const voiceRoutes = require("./routes/voiceRoutes");
 const chatHistoryRoutes = require("./routes/chatHistoryRoutes");
 const fraudAlertRoutes = require("./routes/fraudAlertRoutes");
+const insightsRoutes = require("./routes/insightsRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -90,6 +91,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/voice", voiceRoutes);
 app.use("/api/chat-history", chatHistoryRoutes);
 app.use("/api/fraud-alerts", fraudAlertRoutes);
+app.use("/api/insights", insightsRoutes);
 
 // 404 handler
 app.use((req, res) => {

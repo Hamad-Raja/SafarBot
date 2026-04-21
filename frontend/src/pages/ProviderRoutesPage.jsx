@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import RouteInsightsModal from "../components/RouteInsightsModal";
 
 /**
  * ProviderRoutesPage (DB Connected)
@@ -10,14 +11,8 @@ import Footer from "../components/Footer";
  * ✅ Add route -> POST /api/routes
  * ✅ Pause/Activate -> PATCH /api/routes/:id
  * ✅ Remove -> DELETE /api/routes/:id
- *
- * Mapping:
- * UI from -> fromCity
- * UI to -> toCity
- * UI departure -> departureTime
- * UI fare -> price
- * UI seats -> availableSeats
- * UI active -> active
+ * ✅ Check delay insights -> GET /api/insights/route/:id
+ * ✅ Send manual delay alert -> POST /api/insights/route/:id/send-alert
  */
 const ProviderRoutesPage = () => {
   const [routes, setRoutes] = useState([]);
@@ -29,22 +24,28 @@ const ProviderRoutesPage = () => {
     departure: "",
     fare: "",
     seats: "",
-    travelDate: "", // optional (YYYY-MM-DD)
-    operator: "",   // optional
-    busName: "",    // optional
+    travelDate: "",
+    operator: "",
+    busName: "",
   });
 
   const [query, setQuery] = useState("");
 
-  // ✅ IMPORTANT: set your backend base url
-  // If you have proxy in frontend package.json then keep empty string.
-  // If not, set to "http://localhost:5001"
-  const API_BASE = ""; // or "http://localhost:5001"
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [modalRoute, setModalRoute] = useState(null);
+  const [insightsByRoute, setInsightsByRoute] = useState({});
+  const [insightsLoadingRouteId, setInsightsLoadingRouteId] = useState(null);
+  const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
+  const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
+
+  const API_BASE = "";
 
   const fetchRoutes = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE}/api/routes`, { timeout: 20000 });
+      const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+        timeout: 20000,
+      });
       setRoutes(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to fetch routes.");
@@ -55,7 +56,6 @@ const ProviderRoutesPage = () => {
 
   useEffect(() => {
     fetchRoutes();
-    // eslint-disable-next-line
   }, []);
 
   const filtered = useMemo(() => {
@@ -99,8 +99,6 @@ const ProviderRoutesPage = () => {
         price,
         availableSeats,
         active: true,
-
-        // optional
         travelDate: form.travelDate?.trim() || "",
         operator: form.operator?.trim() || "",
         busName: form.busName?.trim() || "",
@@ -139,10 +137,7 @@ const ProviderRoutesPage = () => {
         { timeout: 20000 }
       );
 
-      setRoutes((prev) =>
-        prev.map((r) => (r._id === id ? res.data : r))
-      );
-
+      setRoutes((prev) => prev.map((r) => (r._id === id ? res.data : r)));
       toast.success(!currentActive ? "Route activated!" : "Route paused!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to update route.");
@@ -156,11 +151,89 @@ const ProviderRoutesPage = () => {
       setLoading(true);
       await axios.delete(`${API_BASE}/api/routes/${id}`, { timeout: 20000 });
       setRoutes((prev) => prev.filter((r) => r._id !== id));
+
+      setInsightsByRoute((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      setAlertResultsByRoute((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      if (selectedRouteId === id) {
+        setSelectedRouteId(null);
+      }
+
+      if (modalRoute?._id === id) {
+        setModalRoute(null);
+      }
+
       toast.success("Route removed!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to remove route.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckInsights = async (routeItem) => {
+    const routeId = routeItem._id;
+
+    try {
+      if (modalRoute?._id === routeId) {
+        setModalRoute(null);
+        setSelectedRouteId(null);
+        return;
+      }
+
+      setModalRoute(routeItem);
+      setSelectedRouteId(routeId);
+      setInsightsLoadingRouteId(routeId);
+
+      const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+        timeout: 20000,
+      });
+
+      setInsightsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: null,
+      }));
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch insights.");
+    } finally {
+      setInsightsLoadingRouteId(null);
+    }
+  };
+
+  const handleSendAlert = async (routeId) => {
+    try {
+      setSendingAlertRouteId(routeId);
+
+      const res = await axios.post(
+        `${API_BASE}/api/insights/route/${routeId}/send-alert`,
+        {},
+        { timeout: 30000 }
+      );
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      toast.success(res?.data?.message || "Delay alert sent successfully.");
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to send delay alert.");
+    } finally {
+      setSendingAlertRouteId(null);
     }
   };
 
@@ -173,7 +246,8 @@ const ProviderRoutesPage = () => {
             <div>
               <h1 className="text-xl font-extrabold">Routes Management</h1>
               <p className="text-xs text-slate-400">
-                Add routes, control availability, and manage pricing & capacity.
+                Add routes, control availability, manage pricing & capacity, and
+                review delay insights.
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
                 {loading ? "Loading..." : `${routes.length} total route(s)`}
@@ -194,7 +268,6 @@ const ProviderRoutesPage = () => {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.25fr,0.75fr]">
-            {/* LIST */}
             <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold">Your Routes</h2>
@@ -208,66 +281,85 @@ const ProviderRoutesPage = () => {
                   No routes found. Try a different search.
                 </p>
               ) : (
-                <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                  {filtered.map((r) => (
-                    <div
-                      key={r._id}
-                      className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                          <p className="text-slate-100 font-semibold">
-                            {r.fromCity} → {r.toCity}
-                          </p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
-                            Departure: {r.departureTime} • Seats: {r.availableSeats} • Fare:
-                            <span className="text-cyan-300 font-semibold">
-                              {" "}
-                              PKR {Number(r.price).toLocaleString()}
-                            </span>
-                            {r.travelDate ? (
-                              <span className="ml-2 text-slate-500">
-                                • Date: {r.travelDate}
+                <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+                  {filtered.map((r) => {
+                    const insightsLoading = insightsLoadingRouteId === r._id;
+                    const isModalOpen = modalRoute?._id === r._id;
+
+                    return (
+                      <div
+                        key={r._id}
+                        className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div>
+                            <p className="text-slate-100 font-semibold">
+                              {r.fromCity} → {r.toCity}
+                            </p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              Departure: {r.departureTime} • Seats:{" "}
+                              {r.availableSeats} • Fare:
+                              <span className="text-cyan-300 font-semibold">
+                                {" "}
+                                PKR {Number(r.price).toLocaleString()}
                               </span>
-                            ) : null}
-                          </p>
-                          <p className="text-[10px] text-slate-500 mt-1">
-                            Route ID: {r.routeId || r._id}
-                          </p>
-                        </div>
+                              {r.travelDate ? (
+                                <span className="ml-2 text-slate-500">
+                                  • Date: {r.travelDate}
+                                </span>
+                              ) : null}
+                            </p>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              Route ID: {r.routeId || r._id}
+                            </p>
+                          </div>
 
-                        <div className="flex items-center gap-2 justify-between sm:justify-end">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] border ${
-                              r.active
-                                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
-                                : "bg-slate-800 text-slate-300 border-slate-600/60"
-                            }`}
-                          >
-                            {r.active ? "Active" : "Paused"}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2 justify-between sm:justify-end">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] border ${
+                                r.active
+                                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
+                                  : "bg-slate-800 text-slate-300 border-slate-600/60"
+                              }`}
+                            >
+                              {r.active ? "Active" : "Paused"}
+                            </span>
 
-                          <button
-                            type="button"
-                            onClick={() => toggle(r._id, r.active)}
-                            disabled={loading}
-                            className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
-                          >
-                            {r.active ? "Pause" : "Activate"}
-                          </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCheckInsights(r)}
+                              disabled={loading || insightsLoading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
+                            >
+                              {insightsLoading
+                                ? "Loading..."
+                                : isModalOpen
+                                ? "Close Insights"
+                                : "Check Insights"}
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => remove(r._id)}
-                            disabled={loading}
-                            className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-400/60 text-red-200 hover:bg-red-500/10 disabled:opacity-50"
-                          >
-                            Remove
-                          </button>
+                            <button
+                              type="button"
+                              onClick={() => toggle(r._id, r.active)}
+                              disabled={loading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
+                            >
+                              {r.active ? "Pause" : "Activate"}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => remove(r._id)}
+                              disabled={loading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-400/60 text-red-200 hover:bg-red-500/10 disabled:opacity-50"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -283,7 +375,6 @@ const ProviderRoutesPage = () => {
               </div>
             </div>
 
-            {/* ADD ROUTE */}
             <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
               <h2 className="text-sm font-semibold mb-1">Add New Route</h2>
               <p className="text-[11px] text-slate-400 mb-4">
@@ -362,7 +453,6 @@ const ProviderRoutesPage = () => {
                   </div>
                 </div>
 
-                {/* Optional fields */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-200">
@@ -413,12 +503,32 @@ const ProviderRoutesPage = () => {
               </form>
 
               <p className="mt-3 text-[10px] text-slate-500">
-                Tip: In production, protect these endpoints with Provider auth.
+                Tip: Delay alerts will be sent manually after checking AI
+                insights.
               </p>
             </div>
           </div>
         </div>
       </main>
+
+      <RouteInsightsModal
+        open={!!modalRoute}
+        onClose={() => {
+          setModalRoute(null);
+          setSelectedRouteId(null);
+        }}
+        route={modalRoute}
+        insights={modalRoute ? insightsByRoute[modalRoute._id] : null}
+        loading={modalRoute ? insightsLoadingRouteId === modalRoute._id : false}
+        onSendAlert={() => modalRoute && handleSendAlert(modalRoute._id)}
+        sendingAlert={
+          modalRoute ? sendingAlertRouteId === modalRoute._id : false
+        }
+        sendAlertResult={
+          modalRoute ? alertResultsByRoute[modalRoute._id] || null : null
+        }
+      />
+
       <Footer />
     </div>
   );
