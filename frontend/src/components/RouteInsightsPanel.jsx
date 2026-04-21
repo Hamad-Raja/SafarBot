@@ -80,7 +80,7 @@ const RouteInsightsPanel = ({
     !sendingAlert;
 
   return (
-    <div className="mt-3 rounded-2xl border border-cyan-500/20 bg-slate-900/70 p-4">
+    <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/70 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white">Delay Insights</h3>

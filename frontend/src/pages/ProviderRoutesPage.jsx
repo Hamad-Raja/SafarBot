@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import RouteInsightsPanel from "../components/RouteInsightsPanel";
+import RouteInsightsModal from "../components/RouteInsightsModal";
 
 /**
  * ProviderRoutesPage (DB Connected)
@@ -13,14 +13,6 @@ import RouteInsightsPanel from "../components/RouteInsightsPanel";
  * ✅ Remove -> DELETE /api/routes/:id
  * ✅ Check delay insights -> GET /api/insights/route/:id
  * ✅ Send manual delay alert -> POST /api/insights/route/:id/send-alert
- *
- * Mapping:
- * UI from -> fromCity
- * UI to -> toCity
- * UI departure -> departureTime
- * UI fare -> price
- * UI seats -> availableSeats
- * UI active -> active
  */
 const ProviderRoutesPage = () => {
   const [routes, setRoutes] = useState([]);
@@ -39,14 +31,14 @@ const ProviderRoutesPage = () => {
 
   const [query, setQuery] = useState("");
 
-  // Delay insights states
   const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [modalRoute, setModalRoute] = useState(null);
   const [insightsByRoute, setInsightsByRoute] = useState({});
   const [insightsLoadingRouteId, setInsightsLoadingRouteId] = useState(null);
   const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
   const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
 
-  const API_BASE = ""; // or "http://localhost:5000"
+  const API_BASE = "";
 
   const fetchRoutes = async () => {
     try {
@@ -64,7 +56,6 @@ const ProviderRoutesPage = () => {
 
   useEffect(() => {
     fetchRoutes();
-    // eslint-disable-next-line
   }, []);
 
   const filtered = useMemo(() => {
@@ -147,7 +138,6 @@ const ProviderRoutesPage = () => {
       );
 
       setRoutes((prev) => prev.map((r) => (r._id === id ? res.data : r)));
-
       toast.success(!currentActive ? "Route activated!" : "Route paused!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to update route.");
@@ -162,7 +152,6 @@ const ProviderRoutesPage = () => {
       await axios.delete(`${API_BASE}/api/routes/${id}`, { timeout: 20000 });
       setRoutes((prev) => prev.filter((r) => r._id !== id));
 
-      // cleanup related states
       setInsightsByRoute((prev) => {
         const next = { ...prev };
         delete next[id];
@@ -179,6 +168,10 @@ const ProviderRoutesPage = () => {
         setSelectedRouteId(null);
       }
 
+      if (modalRoute?._id === id) {
+        setModalRoute(null);
+      }
+
       toast.success("Route removed!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to remove route.");
@@ -187,13 +180,17 @@ const ProviderRoutesPage = () => {
     }
   };
 
-  const handleCheckInsights = async (routeId) => {
+  const handleCheckInsights = async (routeItem) => {
+    const routeId = routeItem._id;
+
     try {
-      if (selectedRouteId === routeId && insightsByRoute[routeId]) {
+      if (modalRoute?._id === routeId) {
+        setModalRoute(null);
         setSelectedRouteId(null);
         return;
       }
 
+      setModalRoute(routeItem);
       setSelectedRouteId(routeId);
       setInsightsLoadingRouteId(routeId);
 
@@ -271,7 +268,6 @@ const ProviderRoutesPage = () => {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.25fr,0.75fr]">
-            {/* LIST */}
             <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold">Your Routes</h2>
@@ -287,11 +283,8 @@ const ProviderRoutesPage = () => {
               ) : (
                 <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
                   {filtered.map((r) => {
-                    const isSelected = selectedRouteId === r._id;
-                    const insights = insightsByRoute[r._id] || null;
                     const insightsLoading = insightsLoadingRouteId === r._id;
-                    const sendingAlert = sendingAlertRouteId === r._id;
-                    const sendAlertResult = alertResultsByRoute[r._id] || null;
+                    const isModalOpen = modalRoute?._id === r._id;
 
                     return (
                       <div
@@ -323,25 +316,26 @@ const ProviderRoutesPage = () => {
 
                           <div className="flex flex-wrap items-center gap-2 justify-between sm:justify-end">
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] border ${r.active
+                              className={`px-2 py-0.5 rounded-full text-[10px] border ${
+                                r.active
                                   ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
                                   : "bg-slate-800 text-slate-300 border-slate-600/60"
-                                }`}
+                              }`}
                             >
                               {r.active ? "Active" : "Paused"}
                             </span>
 
                             <button
                               type="button"
-                              onClick={() => handleCheckInsights(r._id)}
+                              onClick={() => handleCheckInsights(r)}
                               disabled={loading || insightsLoading}
                               className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
                             >
                               {insightsLoading
                                 ? "Loading..."
-                                : isSelected
-                                  ? "Hide Insights"
-                                  : "Check Insights"}
+                                : isModalOpen
+                                ? "Close Insights"
+                                : "Check Insights"}
                             </button>
 
                             <button
@@ -363,16 +357,6 @@ const ProviderRoutesPage = () => {
                             </button>
                           </div>
                         </div>
-
-                        {isSelected ? (
-                          <RouteInsightsPanel
-                            insights={insights}
-                            loading={insightsLoading}
-                            onSendAlert={() => handleSendAlert(r._id)}
-                            sendingAlert={sendingAlert}
-                            sendAlertResult={sendAlertResult}
-                          />
-                        ) : null}
                       </div>
                     );
                   })}
@@ -391,7 +375,6 @@ const ProviderRoutesPage = () => {
               </div>
             </div>
 
-            {/* ADD ROUTE */}
             <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
               <h2 className="text-sm font-semibold mb-1">Add New Route</h2>
               <p className="text-[11px] text-slate-400 mb-4">
@@ -527,6 +510,25 @@ const ProviderRoutesPage = () => {
           </div>
         </div>
       </main>
+
+      <RouteInsightsModal
+        open={!!modalRoute}
+        onClose={() => {
+          setModalRoute(null);
+          setSelectedRouteId(null);
+        }}
+        route={modalRoute}
+        insights={modalRoute ? insightsByRoute[modalRoute._id] : null}
+        loading={modalRoute ? insightsLoadingRouteId === modalRoute._id : false}
+        onSendAlert={() => modalRoute && handleSendAlert(modalRoute._id)}
+        sendingAlert={
+          modalRoute ? sendingAlertRouteId === modalRoute._id : false
+        }
+        sendAlertResult={
+          modalRoute ? alertResultsByRoute[modalRoute._id] || null : null
+        }
+      />
+
       <Footer />
     </div>
   );
