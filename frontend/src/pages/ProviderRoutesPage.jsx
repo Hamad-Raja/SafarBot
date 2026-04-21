@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import RouteInsightsPanel from "../components/RouteInsightsPanel";
 
 /**
  * ProviderRoutesPage (DB Connected)
@@ -10,6 +11,8 @@ import Footer from "../components/Footer";
  * ✅ Add route -> POST /api/routes
  * ✅ Pause/Activate -> PATCH /api/routes/:id
  * ✅ Remove -> DELETE /api/routes/:id
+ * ✅ Check delay insights -> GET /api/insights/route/:id
+ * ✅ Send manual delay alert -> POST /api/insights/route/:id/send-alert
  *
  * Mapping:
  * UI from -> fromCity
@@ -29,22 +32,28 @@ const ProviderRoutesPage = () => {
     departure: "",
     fare: "",
     seats: "",
-    travelDate: "", // optional (YYYY-MM-DD)
-    operator: "",   // optional
-    busName: "",    // optional
+    travelDate: "",
+    operator: "",
+    busName: "",
   });
 
   const [query, setQuery] = useState("");
 
-  // ✅ IMPORTANT: set your backend base url
-  // If you have proxy in frontend package.json then keep empty string.
-  // If not, set to "http://localhost:5001"
-  const API_BASE = ""; // or "http://localhost:5001"
+  // Delay insights states
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [insightsByRoute, setInsightsByRoute] = useState({});
+  const [insightsLoadingRouteId, setInsightsLoadingRouteId] = useState(null);
+  const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
+  const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
+
+  const API_BASE = ""; // or "http://localhost:5000"
 
   const fetchRoutes = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE}/api/routes`, { timeout: 20000 });
+      const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+        timeout: 20000,
+      });
       setRoutes(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to fetch routes.");
@@ -99,8 +108,6 @@ const ProviderRoutesPage = () => {
         price,
         availableSeats,
         active: true,
-
-        // optional
         travelDate: form.travelDate?.trim() || "",
         operator: form.operator?.trim() || "",
         busName: form.busName?.trim() || "",
@@ -139,9 +146,7 @@ const ProviderRoutesPage = () => {
         { timeout: 20000 }
       );
 
-      setRoutes((prev) =>
-        prev.map((r) => (r._id === id ? res.data : r))
-      );
+      setRoutes((prev) => prev.map((r) => (r._id === id ? res.data : r)));
 
       toast.success(!currentActive ? "Route activated!" : "Route paused!");
     } catch (e) {
@@ -156,11 +161,82 @@ const ProviderRoutesPage = () => {
       setLoading(true);
       await axios.delete(`${API_BASE}/api/routes/${id}`, { timeout: 20000 });
       setRoutes((prev) => prev.filter((r) => r._id !== id));
+
+      // cleanup related states
+      setInsightsByRoute((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      setAlertResultsByRoute((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      if (selectedRouteId === id) {
+        setSelectedRouteId(null);
+      }
+
       toast.success("Route removed!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to remove route.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckInsights = async (routeId) => {
+    try {
+      if (selectedRouteId === routeId && insightsByRoute[routeId]) {
+        setSelectedRouteId(null);
+        return;
+      }
+
+      setSelectedRouteId(routeId);
+      setInsightsLoadingRouteId(routeId);
+
+      const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+        timeout: 20000,
+      });
+
+      setInsightsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: null,
+      }));
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch insights.");
+    } finally {
+      setInsightsLoadingRouteId(null);
+    }
+  };
+
+  const handleSendAlert = async (routeId) => {
+    try {
+      setSendingAlertRouteId(routeId);
+
+      const res = await axios.post(
+        `${API_BASE}/api/insights/route/${routeId}/send-alert`,
+        {},
+        { timeout: 30000 }
+      );
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      toast.success(res?.data?.message || "Delay alert sent successfully.");
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to send delay alert.");
+    } finally {
+      setSendingAlertRouteId(null);
     }
   };
 
@@ -173,7 +249,8 @@ const ProviderRoutesPage = () => {
             <div>
               <h1 className="text-xl font-extrabold">Routes Management</h1>
               <p className="text-xs text-slate-400">
-                Add routes, control availability, and manage pricing & capacity.
+                Add routes, control availability, manage pricing & capacity, and
+                review delay insights.
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
                 {loading ? "Loading..." : `${routes.length} total route(s)`}
@@ -208,66 +285,97 @@ const ProviderRoutesPage = () => {
                   No routes found. Try a different search.
                 </p>
               ) : (
-                <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                  {filtered.map((r) => (
-                    <div
-                      key={r._id}
-                      className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                          <p className="text-slate-100 font-semibold">
-                            {r.fromCity} → {r.toCity}
-                          </p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
-                            Departure: {r.departureTime} • Seats: {r.availableSeats} • Fare:
-                            <span className="text-cyan-300 font-semibold">
-                              {" "}
-                              PKR {Number(r.price).toLocaleString()}
-                            </span>
-                            {r.travelDate ? (
-                              <span className="ml-2 text-slate-500">
-                                • Date: {r.travelDate}
+                <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+                  {filtered.map((r) => {
+                    const isSelected = selectedRouteId === r._id;
+                    const insights = insightsByRoute[r._id] || null;
+                    const insightsLoading = insightsLoadingRouteId === r._id;
+                    const sendingAlert = sendingAlertRouteId === r._id;
+                    const sendAlertResult = alertResultsByRoute[r._id] || null;
+
+                    return (
+                      <div
+                        key={r._id}
+                        className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div>
+                            <p className="text-slate-100 font-semibold">
+                              {r.fromCity} → {r.toCity}
+                            </p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              Departure: {r.departureTime} • Seats:{" "}
+                              {r.availableSeats} • Fare:
+                              <span className="text-cyan-300 font-semibold">
+                                {" "}
+                                PKR {Number(r.price).toLocaleString()}
                               </span>
-                            ) : null}
-                          </p>
-                          <p className="text-[10px] text-slate-500 mt-1">
-                            Route ID: {r.routeId || r._id}
-                          </p>
+                              {r.travelDate ? (
+                                <span className="ml-2 text-slate-500">
+                                  • Date: {r.travelDate}
+                                </span>
+                              ) : null}
+                            </p>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              Route ID: {r.routeId || r._id}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 justify-between sm:justify-end">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] border ${r.active
+                                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
+                                  : "bg-slate-800 text-slate-300 border-slate-600/60"
+                                }`}
+                            >
+                              {r.active ? "Active" : "Paused"}
+                            </span>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCheckInsights(r._id)}
+                              disabled={loading || insightsLoading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
+                            >
+                              {insightsLoading
+                                ? "Loading..."
+                                : isSelected
+                                  ? "Hide Insights"
+                                  : "Check Insights"}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => toggle(r._id, r.active)}
+                              disabled={loading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
+                            >
+                              {r.active ? "Pause" : "Activate"}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => remove(r._id)}
+                              disabled={loading}
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-400/60 text-red-200 hover:bg-red-500/10 disabled:opacity-50"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-2 justify-between sm:justify-end">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] border ${
-                              r.active
-                                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
-                                : "bg-slate-800 text-slate-300 border-slate-600/60"
-                            }`}
-                          >
-                            {r.active ? "Active" : "Paused"}
-                          </span>
-
-                          <button
-                            type="button"
-                            onClick={() => toggle(r._id, r.active)}
-                            disabled={loading}
-                            className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
-                          >
-                            {r.active ? "Pause" : "Activate"}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => remove(r._id)}
-                            disabled={loading}
-                            className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-400/60 text-red-200 hover:bg-red-500/10 disabled:opacity-50"
-                          >
-                            Remove
-                          </button>
-                        </div>
+                        {isSelected ? (
+                          <RouteInsightsPanel
+                            insights={insights}
+                            loading={insightsLoading}
+                            onSendAlert={() => handleSendAlert(r._id)}
+                            sendingAlert={sendingAlert}
+                            sendAlertResult={sendAlertResult}
+                          />
+                        ) : null}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -362,7 +470,6 @@ const ProviderRoutesPage = () => {
                   </div>
                 </div>
 
-                {/* Optional fields */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-200">
@@ -413,7 +520,8 @@ const ProviderRoutesPage = () => {
               </form>
 
               <p className="mt-3 text-[10px] text-slate-500">
-                Tip: In production, protect these endpoints with Provider auth.
+                Tip: Delay alerts will be sent manually after checking AI
+                insights.
               </p>
             </div>
           </div>

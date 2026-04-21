@@ -4,15 +4,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 
-# Load .env BEFORE importing modules that use os.getenv(...)
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
-from agents.voice_agent import router as voice_router, APP_VERSION
-from agents.fraud_agent import router as fraud_router
-
-
-app = FastAPI(title="SafarBot AI Service")
+app = FastAPI(title="SafarBot AI Service", version="1.0.0")
 
 
 @app.middleware("http")
@@ -35,7 +30,26 @@ async def log_requests(request: Request, call_next):
         raise
 
 
-app.include_router(voice_router)
-app.include_router(fraud_router)
+@app.get("/ai/health")
+def ai_health():
+    return {
+        "ok": True,
+        "service": "SafarBot AI Service",
+        "app_file": str(__file__),
+    }
 
-print("🔥 LOADED (CLEAN APP):", APP_VERSION, __file__, flush=True)
+
+from agents.fraud_agent import router as fraud_router
+from agents.insights_agent import router as insights_router
+
+app.include_router(fraud_router)
+app.include_router(insights_router)
+
+try:
+    from agents.voice_agent import router as voice_router
+    app.include_router(voice_router)
+    print("✅ voice router loaded", flush=True)
+except Exception as e:
+    print(f"⚠️ voice router skipped: {e}", flush=True)
+
+print("✅ SafarBot AI loaded:", __file__, flush=True)

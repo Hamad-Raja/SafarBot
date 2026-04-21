@@ -19,7 +19,6 @@ const isOwnerOrAdmin = (req, route) => {
   if (!req.user) return false;
   if (req.user.role === "admin") return true;
 
-  // Provider ownership check
   if (req.user.role === "provider") {
     if (!route.provider) return false;
     return String(route.provider) === String(req.user._id);
@@ -27,6 +26,45 @@ const isOwnerOrAdmin = (req, route) => {
 
   return false;
 };
+
+// Converts time into "h:mm AM/PM"
+// Supports:
+// - "1:00 PM"
+// - "01:00 pm"
+// - "13:00"
+// - "1:00"  -> assumed 24-hour style => 1:00 AM
+function normalizeTimeToAmPm(value) {
+  const raw = cleanString(value);
+  if (!raw) return "";
+
+  // already 12-hour with AM/PM
+  const ampmMatch = raw.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (ampmMatch) {
+    let hour = parseInt(ampmMatch[1], 10);
+    const minute = ampmMatch[2];
+    const suffix = ampmMatch[3].toUpperCase();
+
+    if (hour < 1 || hour > 12) return "";
+    return `${hour}:${minute} ${suffix}`;
+  }
+
+  // 24-hour or plain HH:MM
+  const hhmmMatch = raw.match(/^(\d{1,2}):(\d{2})$/);
+  if (hhmmMatch) {
+    let hour24 = parseInt(hhmmMatch[1], 10);
+    const minute = hhmmMatch[2];
+
+    if (hour24 < 0 || hour24 > 23) return "";
+
+    const suffix = hour24 >= 12 ? "PM" : "AM";
+    let hour12 = hour24 % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${suffix}`;
+  }
+
+  return "";
+}
 
 // GET /api/routes?from=...&to=...&date=...&active=true
 exports.getRoutes = async (req, res, next) => {
@@ -39,7 +77,6 @@ exports.getRoutes = async (req, res, next) => {
     if (to) q.toCity = new RegExp(cleanString(to), "i");
     if (date) q.travelDate = cleanString(date);
 
-    // active filter (optional)
     if (active === "true") q.active = true;
     if (active === "false") q.active = false;
 
@@ -61,7 +98,7 @@ exports.getRouteById = async (req, res, next) => {
   }
 };
 
-// OPTIONAL: GET /api/routes/provider/my
+// GET /api/routes/provider/my
 exports.getMyProviderRoutes = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -72,8 +109,7 @@ exports.getMyProviderRoutes = async (req, res, next) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const q =
-      req.user.role === "admin" ? {} : { provider: req.user._id };
+    const q = req.user.role === "admin" ? {} : { provider: req.user._id };
 
     const routes = await Route.find(q).sort({ createdAt: -1 });
     return res.json(routes);
@@ -112,12 +148,14 @@ exports.createRoute = async (req, res, next) => {
 
     const safeFromCity = cleanString(fromCity);
     const safeToCity = cleanString(toCity);
-    const safeDepartureTime = cleanString(departureTime);
+    const safeDepartureTime = normalizeTimeToAmPm(departureTime);
+    const safeArrivalTime = normalizeTimeToAmPm(arrivalTime);
 
     if (!safeFromCity || !safeToCity || !safeDepartureTime) {
-      return res
-        .status(400)
-        .json({ message: "fromCity, toCity, departureTime are required" });
+      return res.status(400).json({
+        message:
+          "fromCity, toCity, departureTime are required. Time must be like '1:00 PM' or '13:00'.",
+      });
     }
 
     const providerId =
@@ -128,7 +166,7 @@ exports.createRoute = async (req, res, next) => {
         ? cleanString(req.user.companyName || operator || "")
         : cleanString(operator || "");
 
-    const newRoute = await Route.create({
+    const newRoute = new Route({
       routeId: cleanString(routeId || ""),
       provider: providerId,
       operator: safeOperator,
@@ -138,13 +176,20 @@ exports.createRoute = async (req, res, next) => {
       toCity: safeToCity,
       travelDate: cleanString(travelDate || ""),
       departureTime: safeDepartureTime,
-      arrivalTime: cleanString(arrivalTime || ""),
+      arrivalTime: safeArrivalTime,
       duration: cleanString(duration || ""),
       availableSeats: parseNumber(availableSeats, 0),
       price: parseNumber(price, 0),
       active: parseBoolean(active, true),
       rating: parseNumber(rating, 0),
     });
+
+    // Auto-fill routeId if not provided
+    if (!newRoute.routeId) {
+      newRoute.routeId = String(newRoute._id);
+    }
+
+    await newRoute.save();
 
     return res.status(201).json(newRoute);
   } catch (e) {
@@ -190,19 +235,50 @@ exports.updateRoute = async (req, res, next) => {
 
       if (
         [
-          "routeId",
           "operator",
           "busName",
           "busType",
           "fromCity",
           "toCity",
           "travelDate",
-          "departureTime",
-          "arrivalTime",
           "duration",
         ].includes(key)
       ) {
         route[key] = cleanString(req.body[key]);
+      }
+
+      if (key === "departureTime") {
+        const normalized = normalizeTimeToAmPm(req.body[key]);
+        if (!normalized) {
+          return res.status(400).json({
+            message:
+              "departureTime format invalid. Use '1:00 PM' or '13:00'.",
+          });
+        }
+        route.departureTime = normalized;
+      }
+
+      if (key === "arrivalTime") {
+        const rawArrival = cleanString(req.body[key]);
+        if (rawArrival) {
+          const normalized = normalizeTimeToAmPm(req.body[key]);
+          if (!normalized) {
+            return res.status(400).json({
+              message:
+                "arrivalTime format invalid. Use '1:00 PM' or '13:00'.",
+            });
+          }
+          route.arrivalTime = normalized;
+        } else {
+          route.arrivalTime = "";
+        }
+      }
+
+      if (key === "routeId") {
+        const safeRouteId = cleanString(req.body[key]);
+        if (safeRouteId) {
+          route.routeId = safeRouteId;
+        }
       }
 
       if (["availableSeats", "price", "rating"].includes(key)) {
@@ -214,16 +290,20 @@ exports.updateRoute = async (req, res, next) => {
       }
     }
 
-    // Provider apna operator overwrite na kare by random payload
     if (req.user.role === "provider") {
       route.provider = req.user._id;
       route.operator = cleanString(req.user.companyName || route.operator || "");
     }
 
     if (!route.fromCity || !route.toCity || !route.departureTime) {
-      return res
-        .status(400)
-        .json({ message: "fromCity, toCity, departureTime are required" });
+      return res.status(400).json({
+        message: "fromCity, toCity, departureTime are required",
+      });
+    }
+
+    // Ensure routeId never stays empty
+    if (!route.routeId) {
+      route.routeId = String(route._id);
     }
 
     await route.save();

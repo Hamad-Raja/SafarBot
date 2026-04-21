@@ -1,10 +1,23 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import {toast } from "react-hot-toast"
+import RouteInsightsModal from "../components/RouteInsightsModal";
+import { toast } from "react-hot-toast";
 
 const AdminDashboard = () => {
   const [range, setRange] = useState("month"); // today | week | month
+
+  const [delayRoutes, setDelayRoutes] = useState([]);
+  const [delayLoading, setDelayLoading] = useState(false);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [modalRoute, setModalRoute] = useState(null);
+  const [insightsByRoute, setInsightsByRoute] = useState({});
+  const [insightsLoadingRouteId, setInsightsLoadingRouteId] = useState(null);
+  const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
+  const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
+
+  const API_BASE = "";
 
   const stats = useMemo(
     () => ({
@@ -78,6 +91,85 @@ const AdminDashboard = () => {
     return "bg-red-500/15 text-red-300 border border-red-400/30";
   };
 
+  const fetchDelayRoutes = async () => {
+    try {
+      setDelayLoading(true);
+      const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+        timeout: 20000,
+      });
+      setDelayRoutes(Array.isArray(res.data) ? res.data : []);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch admin routes.");
+    } finally {
+      setDelayLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDelayRoutes();
+  }, []);
+
+  const handleCheckInsights = async (routeItem) => {
+    const routeId = routeItem._id;
+
+    try {
+      if (modalRoute?._id === routeId) {
+        setModalRoute(null);
+        setSelectedRouteId(null);
+        return;
+      }
+
+      setModalRoute(routeItem);
+      setSelectedRouteId(routeId);
+      setInsightsLoadingRouteId(routeId);
+
+      const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+        timeout: 20000,
+      });
+
+      setInsightsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: null,
+      }));
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch insights.");
+    } finally {
+      setInsightsLoadingRouteId(null);
+    }
+  };
+
+  const handleSendAlert = async (routeId) => {
+    try {
+      setSendingAlertRouteId(routeId);
+
+      const res = await axios.post(
+        `${API_BASE}/api/insights/route/${routeId}/send-alert`,
+        {},
+        { timeout: 30000 }
+      );
+
+      setAlertResultsByRoute((prev) => ({
+        ...prev,
+        [routeId]: res.data,
+      }));
+
+      toast.success(res?.data?.message || "Delay alert sent successfully.");
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to send delay alert.");
+    } finally {
+      setSendingAlertRouteId(null);
+    }
+  };
+
+  const delayPreviewRoutes = useMemo(() => {
+    return delayRoutes.slice(0, 6);
+  }, [delayRoutes]);
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
       <Navbar />
@@ -93,7 +185,6 @@ const AdminDashboard = () => {
                 </h1>
                 <p className="text-xs text-slate-300 max-w-lg">
                   Monitor system activity, bookings, revenue and operational signals.
-                  (Demo analytics with dummy data)
                 </p>
               </div>
 
@@ -102,7 +193,6 @@ const AdminDashboard = () => {
                   Role: ADMIN
                 </span>
 
-                {/* Range tabs */}
                 <div className="flex rounded-full bg-slate-900/70 border border-white/10 p-1">
                   {["today", "week", "month"].map((v) => (
                     <button
@@ -239,6 +329,83 @@ const AdminDashboard = () => {
 
             {/* Right column */}
             <div className="space-y-6">
+              {/* Delay monitoring */}
+              <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-amber-500/10 text-xs">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-semibold text-sm">Delay Monitoring</h2>
+                  <button
+                    type="button"
+                    onClick={fetchDelayRoutes}
+                    disabled={delayLoading}
+                    className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
+                  >
+                    {delayLoading ? "Refreshing..." : "Refresh"}
+                  </button>
+                </div>
+
+                {delayPreviewRoutes.length === 0 ? (
+                  <p className="text-[11px] text-slate-400">
+                    No routes available for delay monitoring.
+                  </p>
+                ) : (
+                  <div className="space-y-3 max-h-[540px] overflow-y-auto pr-1">
+                    {delayPreviewRoutes.map((r) => {
+                      const isModalOpen = modalRoute?._id === r._id;
+                      const insightsLoading = insightsLoadingRouteId === r._id;
+
+                      return (
+                        <div
+                          key={r._id}
+                          className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-3"
+                        >
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <p className="text-slate-100 font-semibold text-[12px]">
+                                  {r.fromCity} → {r.toCity}
+                                </p>
+                                <p className="text-[10px] text-slate-400 mt-1">
+                                  {r.operator || "Unknown Operator"} • {r.departureTime || "N/A"}
+                                  {r.travelDate ? ` • ${r.travelDate}` : ""}
+                                </p>
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Route ID: {r.routeId || r._id}
+                                </p>
+                              </div>
+
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] border ${
+                                  r.active
+                                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
+                                    : "bg-slate-800 text-slate-300 border-slate-600/60"
+                                }`}
+                              >
+                                {r.active ? "Active" : "Paused"}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleCheckInsights(r)}
+                                disabled={insightsLoading}
+                                className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
+                              >
+                                {insightsLoading
+                                  ? "Loading..."
+                                  : isModalOpen
+                                  ? "Close Insights"
+                                  : "Check Insights"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               {/* Recent users */}
               <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-emerald-500/10 text-xs">
                 <div className="flex items-center justify-between mb-4">
@@ -315,9 +482,26 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-
         </div>
       </main>
+
+      <RouteInsightsModal
+        open={!!modalRoute}
+        onClose={() => {
+          setModalRoute(null);
+          setSelectedRouteId(null);
+        }}
+        route={modalRoute}
+        insights={modalRoute ? insightsByRoute[modalRoute._id] : null}
+        loading={modalRoute ? insightsLoadingRouteId === modalRoute._id : false}
+        onSendAlert={() => modalRoute && handleSendAlert(modalRoute._id)}
+        sendingAlert={
+          modalRoute ? sendingAlertRouteId === modalRoute._id : false
+        }
+        sendAlertResult={
+          modalRoute ? alertResultsByRoute[modalRoute._id] || null : null
+        }
+      />
 
       <Footer />
     </div>
