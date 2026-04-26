@@ -3,52 +3,37 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Requirement:
- * - User TEXT -> show bot reply as TEXT only (no voice autoplay).
- * - User VOICE -> bot reply should come as VOICE (backend TTS) + show text bubble too.
- * - Voice should be replayable (audio controls in chat bubble).
- * - If backend says nextAction === "OPEN_SEATS" and selectedRouteId exists -> navigate to seats page.
- * - If backend says nextAction === "OPEN_ROUTES" -> navigate to routes page.
- *
- * FIX INCLUDED:
- * ✅ DB audio URLs were relative (/uploads/...) and were loading from Vite origin (5173).
- * ✅ Now we resolve them to backend origin (e.g. http://localhost:5000/uploads/...)
- */
-
 const VoiceChatModal = ({ open, onClose, onCriteria }) => {
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
-
   const [sessionId, setSessionId] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const listRef = useRef(null);
 
-  // ✅ backend origin (set in .env as VITE_API_ORIGIN=http://localhost:5000)
+  // Backend origin for /uploads voice files
   const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || "http://localhost:5000";
 
-  // ✅ convert relative media url -> absolute backend url
   const resolveMediaUrl = (u) => {
     if (!u) return null;
-    if (u.startsWith("blob:")) return u; // local recorded
-    if (u.startsWith("http://") || u.startsWith("https://")) return u; // already absolute
+    if (u.startsWith("blob:")) return u;
+    if (u.startsWith("http://") || u.startsWith("https://")) return u;
     return `${API_ORIGIN}${u.startsWith("/") ? "" : "/"}${u}`;
   };
 
   const pushMsg = (m) => setMessages((prev) => [...prev, m]);
 
   const updateMsg = (id, patch) => {
-    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...patch } : m))
+    );
   };
 
-  // ✅ Load last chat from DB when modal opens
   useEffect(() => {
     if (!open) return;
 
@@ -61,7 +46,9 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
         setSessionId(res.data?.sessionId || null);
 
-        const serverMsgs = Array.isArray(res.data?.messages) ? res.data.messages : [];
+        const serverMsgs = Array.isArray(res.data?.messages)
+          ? res.data.messages
+          : [];
 
         setMessages(
           serverMsgs.map((m) => ({
@@ -69,7 +56,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
             sender: m.sender,
             type: m.type,
             text: m.text || "",
-            audioUrl: resolveMediaUrl(m.audioUrl || null), // ✅ FIX
+            audioUrl: resolveMediaUrl(m.audioUrl || null),
           }))
         );
 
@@ -84,6 +71,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
   useEffect(() => {
     if (!open) return;
+
     setTimeout(() => {
       listRef.current?.scrollTo({
         top: listRef.current.scrollHeight,
@@ -94,6 +82,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
   useEffect(() => {
     if (!open) return;
+
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
@@ -108,19 +97,26 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       const a = new Audio(url);
       await a.play();
     } catch {
-      // autoplay blocked
+      // Browser may block autoplay. User can replay from controls.
     }
   };
 
   const base64ToBlobUrl = (b64, mime = "audio/mpeg") => {
-    const byteChars = atob(b64);
+    const cleanBase64 = String(b64).includes(",")
+      ? String(b64).split(",").pop()
+      : String(b64);
+
+    const byteChars = atob(cleanBase64);
     const byteNumbers = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+
+    for (let i = 0; i < byteChars.length; i++) {
+      byteNumbers[i] = byteChars.charCodeAt(i);
+    }
+
     const blob = new Blob([new Uint8Array(byteNumbers)], { type: mime });
     return URL.createObjectURL(blob);
   };
 
-  // ✅ navigation based on backend nextAction
   const handleNextAction = (data) => {
     const nextAction = data?.nextAction;
     const routeId = data?.selectedRouteId;
@@ -132,11 +128,11 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       return true;
     }
 
-    if (nextAction === "OPEN_ROUTES") {
+    if (nextAction === "OPEN_ROUTES" || nextAction === "SHOW_ROUTES") {
       const qs = new URLSearchParams({
         from: c.from || "",
         to: c.to || "",
-        date: c.date || "",
+        date: c.date || c.day || "",
       }).toString();
 
       onClose?.();
@@ -149,6 +145,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
   const clearChat = async () => {
     if (processing) return;
+
     const ok = window.confirm("Clear chat history?");
     if (!ok) return;
 
@@ -159,6 +156,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
           timeout: 60000,
         });
       }
+
       setMessages([]);
       setSessionId(null);
       toast.success("Chat cleared.");
@@ -167,13 +165,17 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     }
   };
 
-  // ---------------- TEXT SEND ----------------
   const sendText = async () => {
     const t = text.trim();
     if (!t || processing) return;
 
     setText("");
-    pushMsg({ id: Date.now(), sender: "user", type: "text", text: t });
+    pushMsg({
+      id: Date.now(),
+      sender: "user",
+      type: "text",
+      text: t,
+    });
 
     try {
       setProcessing(true);
@@ -181,12 +183,10 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       const res = await axios.post(
         "/api/chat/message",
         { sessionId, message: t },
-        { withCredentials: true, timeout: 60000 }
+        { withCredentials: true, timeout: 180000 }
       );
 
       if (res.data?.sessionId) setSessionId(res.data.sessionId);
-
-      handleNextAction(res.data);
 
       const replyText = res.data?.replyText || "OK";
 
@@ -198,6 +198,8 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       });
 
       if (res.data?.criteria) onCriteria?.(res.data.criteria);
+
+      handleNextAction(res.data);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to send message.");
     } finally {
@@ -205,7 +207,6 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     }
   };
 
-  // ---------------- VOICE RECORD ----------------
   const startRecording = async () => {
     if (processing || recording) return;
 
@@ -214,9 +215,14 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
       chunksRef.current = [];
 
-      const mr = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : undefined,
-      });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : "";
+
+      const mr = new MediaRecorder(
+        stream,
+        mimeType ? { mimeType } : undefined
+      );
 
       mediaRecorderRef.current = mr;
 
@@ -226,8 +232,18 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
       mr.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
+
+        const blob = new Blob(chunksRef.current, {
+          type: mr.mimeType || "audio/webm",
+        });
+
         chunksRef.current = [];
+
+        if (blob.size < 1000) {
+          toast.error("Recording was too short or empty.");
+          return;
+        }
+
         await sendVoiceBlob(blob);
       };
 
@@ -240,6 +256,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
   const stopRecording = () => {
     if (!mediaRecorderRef.current) return;
+
     try {
       mediaRecorderRef.current.stop();
     } finally {
@@ -247,12 +264,10 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     }
   };
 
-  // ---------------- SEND VOICE TO NODE ----------------
   const sendVoiceBlob = async (blob) => {
     try {
       setProcessing(true);
 
-      // ✅ show user voice exactly like before
       const localUrl = URL.createObjectURL(blob);
       const userVoiceMsgId = Date.now();
 
@@ -265,12 +280,15 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
       const fd = new FormData();
       fd.append("audio", blob, "voice.webm");
-      if (sessionId) fd.append("sessionId", sessionId);
+
+      if (sessionId) {
+        fd.append("sessionId", sessionId);
+      }
 
       const res = await axios.post("/api/voice/chat", fd, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
-        timeout: 120000,
+        timeout: 180000,
       });
 
       if (res.data?.sessionId) setSessionId(res.data.sessionId);
@@ -278,9 +296,10 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       const userText = res.data?.userText || null;
       const replyText = res.data?.replyText || "OK";
 
-      // ✅ replace user voice local url with server url so it persists
       if (res.data?.savedUserAudioUrl) {
-        updateMsg(userVoiceMsgId, { audioUrl: resolveMediaUrl(res.data.savedUserAudioUrl) }); // ✅ FIX
+        updateMsg(userVoiceMsgId, {
+          audioUrl: resolveMediaUrl(res.data.savedUserAudioUrl),
+        });
       }
 
       if (userText) {
@@ -292,16 +311,16 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
         });
       }
 
-      // ✅ bot audio prefer server url (persistent)
       let botAudioUrl = res.data?.savedBotAudioUrl
-        ? resolveMediaUrl(res.data.savedBotAudioUrl) // ✅ FIX
+        ? resolveMediaUrl(res.data.savedBotAudioUrl)
         : null;
 
-      // fallback to base64 (if server url not present)
       if (!botAudioUrl) {
         const audioBase64 = res.data?.audioBase64 || null;
         const audioMime = res.data?.audioMime || "audio/mpeg";
-        botAudioUrl = audioBase64 ? base64ToBlobUrl(audioBase64, audioMime) : null;
+        botAudioUrl = audioBase64
+          ? base64ToBlobUrl(audioBase64, audioMime)
+          : null;
       }
 
       pushMsg({
@@ -317,9 +336,11 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       const navigated = handleNextAction(res.data);
       if (navigated) return;
 
-      // autoplay bot voice
-      if (botAudioUrl) await playAudioUrl(botAudioUrl);
-      else toast.error("Backend did not return voice audio.");
+      if (botAudioUrl) {
+        await playAudioUrl(botAudioUrl);
+      } else {
+        toast.error("Backend did not return voice audio.");
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || "Voice request failed.");
     } finally {
@@ -339,9 +360,13 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               : "bg-slate-900/70 border-white/10 text-slate-100"
           }`}
         >
-          {m.type === "text" && <div className="whitespace-pre-wrap">{m.text}</div>}
+          {m.type === "text" && (
+            <div className="whitespace-pre-wrap">{m.text}</div>
+          )}
 
-          {m.type === "voice" && <audio controls src={m.audioUrl} className="w-56" />}
+          {m.type === "voice" && m.audioUrl && (
+            <audio controls src={m.audioUrl} className="w-56" />
+          )}
 
           {m.type === "text" && m.sender === "bot" && m.audioUrl && (
             <div className="mt-2">
@@ -367,7 +392,8 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               SafarBot Voice Assistant
             </h2>
             <p className="text-[11px] text-slate-400">
-              Text → text reply. Voice → voice reply. {processing ? "Processing..." : "Ready"}
+              Text → text reply. Voice → voice reply.{" "}
+              {processing ? "Processing..." : "Ready"}
             </p>
           </div>
 
@@ -377,8 +403,6 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               onClick={clearChat}
               disabled={processing}
               className="h-9 px-3 rounded-2xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-700 transition text-xs"
-              aria-label="Clear chat"
-              title="Clear chat"
             >
               Clear
             </button>
@@ -387,14 +411,16 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               type="button"
               onClick={() => !processing && onClose?.()}
               className="h-9 w-9 rounded-2xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-700 transition"
-              aria-label="Close"
             >
               ✕
             </button>
           </div>
         </div>
 
-        <div ref={listRef} className="h-[55vh] md:h-[60vh] overflow-y-auto p-4 space-y-3">
+        <div
+          ref={listRef}
+          className="h-[55vh] md:h-[60vh] overflow-y-auto p-4 space-y-3"
+        >
           {messages.length === 0 ? (
             <div className="text-center text-slate-400 text-xs mt-8">
               Try voice: “Islamabad se Lahore kal”
@@ -404,7 +430,9 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
           )}
 
           {processing && (
-            <div className="text-center text-[11px] text-slate-400">SafarBot is thinking...</div>
+            <div className="text-center text-[11px] text-slate-400">
+              SafarBot is thinking...
+            </div>
           )}
         </div>
 
@@ -449,8 +477,9 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
           </div>
 
           <p className="mt-2 text-[10px] text-slate-500">
-            Voice is sent as <span className="text-slate-300">audio/webm</span>. Voice replies are
-            returned by backend TTS and can be replayed.
+            Voice is sent as{" "}
+            <span className="text-slate-300">audio/webm</span>. Voice replies
+            are returned by backend TTS and can be replayed.
           </p>
         </div>
       </div>
