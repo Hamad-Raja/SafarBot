@@ -6,7 +6,7 @@ import RouteInsightsModal from "../components/RouteInsightsModal";
 import { toast } from "react-hot-toast";
 
 const AdminDashboard = () => {
-  const [range, setRange] = useState("month"); // today | week | month
+  const [range, setRange] = useState("month");
 
   const [delayRoutes, setDelayRoutes] = useState([]);
   const [delayLoading, setDelayLoading] = useState(false);
@@ -17,71 +17,36 @@ const AdminDashboard = () => {
   const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
   const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
 
+  const [dashboardData, setDashboardData] = useState({
+    stats: {
+      totalBookings: 0,
+      totalRevenue: 0,
+      activeUsers: 0,
+      successRate: 0,
+      fraudAlerts: 0,
+      pendingProviders: 0,
+    },
+    topRoutes: [],
+    recentBookings: [],
+    recentUsers: [],
+  });
+
   const API_BASE = "";
 
-  const stats = useMemo(
-    () => ({
-      totalBookings: 182,
-      totalRevenue: 542000,
-      activeUsers: 119,
-      successRate: 97,
-      fraudAlerts: 3,
-      pendingProviders: 1,
-    }),
-    []
-  );
+  const getAuthConfig = () => {
+    const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
 
-  const topRoutes = useMemo(
-    () => [
-      { route: "Islamabad → Lahore", bookings: 68, revenue: 170000 },
-      { route: "Lahore → Karachi", bookings: 41, revenue: 190000 },
-      { route: "Rawalpindi → Karachi", bookings: 27, revenue: 120000 },
-      { route: "Islamabad → Faisalabad", bookings: 22, revenue: 62000 },
-    ],
-    []
-  );
+    return {
+      headers: {
+        Authorization: `Bearer ${storedUser.token}`,
+      },
+    };
+  };
 
-  const recentBookings = useMemo(
-    () => [
-      {
-        id: 1,
-        route: "Islamabad → Faisalabad",
-        operator: "Faisal Movers",
-        amount: 3200,
-        seats: "A-03, A-04",
-        time: "Today • 10:45 AM",
-        status: "confirmed",
-      },
-      {
-        id: 2,
-        route: "Lahore → Multan",
-        operator: "Daewoo Express",
-        amount: 2800,
-        seats: "B-12",
-        time: "Yesterday • 06:20 PM",
-        status: "confirmed",
-      },
-      {
-        id: 3,
-        route: "Rawalpindi → Karachi",
-        operator: "Skyways",
-        amount: 6800,
-        seats: "C-07",
-        time: "Yesterday • 03:10 PM",
-        status: "pending",
-      },
-    ],
-    []
-  );
-
-  const recentUsers = useMemo(
-    () => [
-      { name: "Ali Khan", email: "ali@example.com", role: "user" },
-      { name: "Ayesha Noor", email: "ayesha@example.com", role: "user" },
-      { name: "Bus Provider", email: "provider@safarbot.com", role: "provider" },
-    ],
-    []
-  );
+  const stats = dashboardData.stats;
+  const topRoutes = dashboardData.topRoutes;
+  const recentBookings = dashboardData.recentBookings;
+  const recentUsers = dashboardData.recentUsers;
 
   const badge = (status) => {
     if (status === "confirmed")
@@ -91,10 +56,40 @@ const AdminDashboard = () => {
     return "bg-red-500/15 text-red-300 border border-red-400/30";
   };
 
+  const fetchDashboardData = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/admin/dashboard`, {
+        ...getAuthConfig(),
+        timeout: 20000,
+      });
+
+      setDashboardData({
+        stats: res.data?.stats || {
+          totalBookings: 0,
+          totalRevenue: 0,
+          activeUsers: 0,
+          successRate: 0,
+          fraudAlerts: 0,
+          pendingProviders: 0,
+        },
+        topRoutes: Array.isArray(res.data?.topRoutes) ? res.data.topRoutes : [],
+        recentBookings: Array.isArray(res.data?.recentBookings)
+          ? res.data.recentBookings
+          : [],
+        recentUsers: Array.isArray(res.data?.recentUsers)
+          ? res.data.recentUsers
+          : [],
+      });
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch dashboard data.");
+    }
+  };
+
   const fetchDelayRoutes = async () => {
     try {
       setDelayLoading(true);
       const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+        ...getAuthConfig(),
         timeout: 20000,
       });
       setDelayRoutes(Array.isArray(res.data) ? res.data : []);
@@ -106,6 +101,7 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
+    fetchDashboardData();
     fetchDelayRoutes();
   }, []);
 
@@ -124,6 +120,7 @@ const AdminDashboard = () => {
       setInsightsLoadingRouteId(routeId);
 
       const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+        ...getAuthConfig(),
         timeout: 20000,
       });
 
@@ -150,7 +147,10 @@ const AdminDashboard = () => {
       const res = await axios.post(
         `${API_BASE}/api/insights/route/${routeId}/send-alert`,
         {},
-        { timeout: 30000 }
+        {
+          ...getAuthConfig(),
+          timeout: 30000,
+        }
       );
 
       setAlertResultsByRoute((prev) => ({
@@ -223,7 +223,7 @@ const AdminDashboard = () => {
             <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-emerald-500/10">
               <p className="text-[11px] text-slate-400 mb-1">Revenue</p>
               <p className="text-2xl font-extrabold">
-                PKR {stats.totalRevenue.toLocaleString()}
+                PKR {(stats.totalRevenue || 0).toLocaleString()}
               </p>
             </div>
 
@@ -258,33 +258,42 @@ const AdminDashboard = () => {
               </div>
 
               <div className="space-y-3">
-                {topRoutes.map((r) => (
-                  <div key={r.route}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-slate-200">{r.route}</span>
-                      <span className="text-cyan-300 font-semibold">
-                        PKR {r.revenue.toLocaleString()}
-                      </span>
+                {topRoutes.length === 0 ? (
+                  <p className="text-[11px] text-slate-400">No route data available.</p>
+                ) : (
+                  topRoutes.map((r) => (
+                    <div key={r.route}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-slate-200">{r.route}</span>
+                        <span className="text-cyan-300 font-semibold">
+                          PKR {(r.revenue || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+                          style={{
+                            width: `${
+                              stats.totalBookings > 0
+                                ? Math.min(100, (r.bookings / stats.totalBookings) * 100)
+                                : 0
+                            }%`,
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                        <span>{r.bookings} bookings</span>
+                        <span>
+                          Share:{" "}
+                          {stats.totalBookings > 0
+                            ? Math.round((r.bookings / stats.totalBookings) * 100)
+                            : 0}
+                          %
+                        </span>
+                      </div>
                     </div>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            (r.bookings / stats.totalBookings) * 100
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                      <span>{r.bookings} bookings</span>
-                      <span>
-                        Share: {Math.round((r.bookings / stats.totalBookings) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
 
               {/* Recent bookings */}
@@ -295,34 +304,39 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="space-y-2">
-                  {recentBookings.map((b) => (
-                    <div
-                      key={b.id}
-                      className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex items-center justify-between gap-3"
-                    >
-                      <div>
-                        <p className="text-slate-200 text-[11px] font-semibold">
-                          {b.route}
-                        </p>
-                        <p className="text-[10px] text-slate-400">
-                          {b.operator} • Seats: {b.seats} • {b.time}
-                        </p>
-                      </div>
+                  {recentBookings.length === 0 ? (
+                    <p className="text-[11px] text-slate-400">No recent bookings found.</p>
+                  ) : (
+                    recentBookings.map((b) => (
+                      <div
+                        key={b.id}
+                        className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex items-center justify-between gap-3"
+                      >
+                        <div>
+                          <p className="text-slate-200 text-[11px] font-semibold">
+                            {b.route}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {b.operator} • Seats: {b.seats || "N/A"} •{" "}
+                            {b.time ? new Date(b.time).toLocaleString() : "N/A"}
+                          </p>
+                        </div>
 
-                      <div className="text-right">
-                        <p className="text-cyan-300 text-[11px] font-semibold">
-                          PKR {b.amount.toLocaleString()}
-                        </p>
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${badge(
-                            b.status
-                          )}`}
-                        >
-                          {b.status}
-                        </span>
+                        <div className="text-right">
+                          <p className="text-cyan-300 text-[11px] font-semibold">
+                            PKR {(b.amount || 0).toLocaleString()}
+                          </p>
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${badge(
+                              b.status
+                            )}`}
+                          >
+                            {b.status}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -365,7 +379,8 @@ const AdminDashboard = () => {
                                   {r.fromCity} → {r.toCity}
                                 </p>
                                 <p className="text-[10px] text-slate-400 mt-1">
-                                  {r.operator || "Unknown Operator"} • {r.departureTime || "N/A"}
+                                  {r.operator || "Unknown Operator"} •{" "}
+                                  {r.departureTime || "N/A"}
                                   {r.travelDate ? ` • ${r.travelDate}` : ""}
                                 </p>
                                 <p className="text-[10px] text-slate-500 mt-1">
@@ -410,31 +425,35 @@ const AdminDashboard = () => {
               <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-emerald-500/10 text-xs">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-sm">Recent Users</h2>
-                  <span className="text-[11px] text-slate-400">Demo</span>
+                  <span className="text-[11px] text-slate-400">Latest</span>
                 </div>
 
                 <div className="space-y-3">
-                  {recentUsers.map((u) => (
-                    <div
-                      key={u.email}
-                      className="flex items-center justify-between bg-slate-950/60 rounded-2xl px-3 py-2 border border-white/10"
-                    >
-                      <div>
-                        <p className="text-slate-200">{u.name}</p>
-                        <p className="text-[10px] text-slate-400">{u.email}</p>
-                      </div>
-
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${
-                          u.role === "provider"
-                            ? "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30"
-                            : "bg-cyan-500/15 text-cyan-300 border border-cyan-400/30"
-                        }`}
+                  {recentUsers.length === 0 ? (
+                    <p className="text-[11px] text-slate-400">No recent users found.</p>
+                  ) : (
+                    recentUsers.map((u) => (
+                      <div
+                        key={u.email}
+                        className="flex items-center justify-between bg-slate-950/60 rounded-2xl px-3 py-2 border border-white/10"
                       >
-                        {u.role}
-                      </span>
-                    </div>
-                  ))}
+                        <div>
+                          <p className="text-slate-200">{u.name}</p>
+                          <p className="text-[10px] text-slate-400">{u.email}</p>
+                        </div>
+
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${
+                            u.role === "provider"
+                              ? "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30"
+                              : "bg-cyan-500/15 text-cyan-300 border border-cyan-400/30"
+                          }`}
+                        >
+                          {u.role}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -466,14 +485,14 @@ const AdminDashboard = () => {
                 <div className="grid gap-2">
                   <button
                     type="button"
-                    onClick={() => toast.success("Demo: Export report")}
+                    onClick={() => toast.success("Export report feature not connected yet")}
                     className="w-full px-4 py-2 rounded-2xl bg-slate-950/60 border border-white/10 text-slate-200 hover:bg-slate-950 transition-colors"
                   >
-                    Export Summary (Demo)
+                    Export Summary
                   </button>
                   <button
                     type="button"
-                    onClick={() => toast.success("Demo: Review pending providers")}
+                    onClick={() => toast.success("Open providers page to review pending providers")}
                     className="w-full px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-semibold"
                   >
                     Review Pending Providers

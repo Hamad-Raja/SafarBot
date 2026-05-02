@@ -1,27 +1,64 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-const dummyUsers = [
-  { id: 1, name: "Ali Raza", email: "ali@example.com", role: "user", status: "active" },
-  { id: 2, name: "Fatima Khan", email: "fatima@example.com", role: "user", status: "active" },
-  { id: 3, name: "SafarBot Provider", email: "provider@safarbot.com", role: "provider", status: "pending" },
-  { id: 4, name: "SafarBot Admin", email: "admin@safarbot.com", role: "admin", status: "active" },
-];
 
 const AdminUsersPage = () => {
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [users, setUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
+
+      const res = await axios.get("/api/admin/providers", {
+        headers: {
+          Authorization: `Bearer ${storedUser.token}`,
+        },
+      });
+
+      const formattedUsers = Array.isArray(res.data)
+        ? res.data.map((u) => ({
+          id: u._id,
+          name: u.name || "Unknown",
+          email: u.email || "No email",
+          role: u.role || "provider",
+          status:
+            u.providerStatus ||
+            (u.isActive === false
+              ? "suspended"
+              : u.isApproved
+                ? "active"
+                : "pending"),
+        }))
+        : [];
+
+      setUsers(formattedUsers);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to fetch providers.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return dummyUsers.filter((u) => {
+
+    return users.filter((u) => {
       const matchesQuery =
-        !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+        !q ||
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q);
+
       const matchesRole = roleFilter === "all" ? true : u.role === roleFilter;
+
       return matchesQuery && matchesRole;
     });
-  }, [query, roleFilter]);
+  }, [query, roleFilter, users]);
 
   const statusBadge = (status) => {
     if (status === "active")
@@ -31,7 +68,7 @@ const AdminUsersPage = () => {
     return "bg-red-500/15 text-red-300 border border-red-400/30";
   };
 
-  const action = (msg) => toast.success(`Demo: ${msg}`);
+  const action = (msg) => toast.success(msg);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
@@ -42,7 +79,7 @@ const AdminUsersPage = () => {
             <div>
               <h1 className="text-xl font-extrabold">Manage Users</h1>
               <p className="text-xs text-slate-400">
-                Search accounts, filter roles and review status (demo data).
+                Search provider accounts, filter roles and review status.
               </p>
             </div>
 
@@ -58,10 +95,8 @@ const AdminUsersPage = () => {
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
               >
-                <option value="all">All Roles</option>
-                <option value="user">Users</option>
+                <option value="all">All Providers</option>
                 <option value="provider">Providers</option>
-                <option value="admin">Admins</option>
               </select>
             </div>
           </div>
@@ -81,7 +116,9 @@ const AdminUsersPage = () => {
               <tbody>
                 {filtered.map((u) => (
                   <tr key={u.id} className="border-b border-white/5">
-                    <td className="py-3 pr-3 text-slate-100 font-semibold">{u.name}</td>
+                    <td className="py-3 pr-3 text-slate-100 font-semibold">
+                      {u.name}
+                    </td>
                     <td className="py-3 pr-3 text-slate-300">{u.email}</td>
                     <td className="py-3 pr-3">
                       <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-wide">
@@ -89,7 +126,11 @@ const AdminUsersPage = () => {
                       </span>
                     </td>
                     <td className="py-3 pr-3">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${statusBadge(u.status)}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${statusBadge(
+                          u.status
+                        )}`}
+                      >
                         {u.status}
                       </span>
                     </td>

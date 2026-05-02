@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import {
   LineChart,
   Line,
@@ -13,24 +15,32 @@ import {
   Bar,
 } from "recharts";
 
-const revenueData = [
-  { month: "Jan", revenue: 120000 },
-  { month: "Feb", revenue: 145000 },
-  { month: "Mar", revenue: 132000 },
-  { month: "Apr", revenue: 160000 },
-  { month: "May", revenue: 172500 },
-  { month: "Jun", revenue: 168000 },
-];
-
-const bookingsData = [
-  { route: "ISB-LHR", bookings: 68 },
-  { route: "LHR-KHI", bookings: 41 },
-  { route: "RWP-KHI", bookings: 27 },
-  { route: "ISB-MULT", bookings: 22 },
-];
-
 const AdminReportsPage = () => {
-  const [range, setRange] = useState("6m"); // 7d | 30d | 6m | 12m
+  const [range, setRange] = useState("6m");
+  const [revenueData, setRevenueData] = useState([]);
+  const [bookingsData, setBookingsData] = useState([]);
+
+  const fetchReports = async () => {
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
+    const token = storedUser.token;
+
+    const res = await axios.get(`/api/admin/reports?range=${range}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setRevenueData(Array.isArray(res.data?.revenue) ? res.data.revenue : []);
+    setBookingsData(Array.isArray(res.data?.routes) ? res.data.routes : []);
+  } catch (e) {
+    toast.error(e?.response?.data?.message || "Failed to load reports");
+  }
+};
+
+  useEffect(() => {
+    fetchReports();
+  }, [range]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
@@ -41,7 +51,7 @@ const AdminReportsPage = () => {
             <div>
               <h1 className="text-xl font-extrabold">Reports &amp; Analytics</h1>
               <p className="text-xs text-slate-400">
-                Demo charts for revenue trends and route performance.
+                Revenue trends and route performance.
               </p>
             </div>
 
@@ -59,10 +69,10 @@ const AdminReportsPage = () => {
 
               <button
                 type="button"
-                onClick={() => toast.success("Demo: Export CSV")}
+                onClick={() => toast.success("Export feature not connected")}
                 className="px-4 py-2 rounded-2xl bg-slate-900/70 border border-white/10 text-sm font-semibold text-slate-200 hover:bg-slate-900 transition-colors"
               >
-                Export CSV (Demo)
+                Export CSV
               </button>
             </div>
           </div>
@@ -76,7 +86,10 @@ const AdminReportsPage = () => {
 
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={revenueData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <LineChart
+                    data={revenueData}
+                    margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                     <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} />
                     <YAxis stroke="#94a3b8" fontSize={10} />
@@ -88,7 +101,13 @@ const AdminReportsPage = () => {
                       }}
                       labelStyle={{ color: "#e5e7eb" }}
                     />
-                    <Line type="monotone" dataKey="revenue" stroke="#22d3ee" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#22d3ee"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -102,7 +121,10 @@ const AdminReportsPage = () => {
 
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={bookingsData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart
+                    data={bookingsData}
+                    margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                     <XAxis dataKey="route" stroke="#94a3b8" fontSize={10} />
                     <YAxis stroke="#94a3b8" fontSize={10} />
@@ -122,10 +144,9 @@ const AdminReportsPage = () => {
           </div>
 
           <div className="mt-6 bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-cyan-500/10 text-xs text-slate-300">
-            <p className="font-semibold text-slate-100 mb-1">Notes (Demo)</p>
+            <p className="font-semibold text-slate-100 mb-1">Notes</p>
             <p className="text-slate-400">
-              In a real system, charts are generated from bookings, provider payouts, cancellations, refunds, and route occupancy.
-              This demo page is designed to present a realistic admin analytics UI.
+              Charts are generated from real booking and revenue data.
             </p>
           </div>
         </div>
