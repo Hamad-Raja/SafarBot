@@ -1,22 +1,65 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const ProviderDashboard = () => {
-  const [routes] = useState([
-    { id: "FM-ISB-LHR", active: true, seats: 40, fare: 2500 },
-    { id: "FM-LHR-KHI", active: true, seats: 40, fare: 6500 },
-    { id: "FM-LHR-MLT", active: false, seats: 40, fare: 2200 },
-  ]);
+  const [routes, setRoutes] = useState([]);
+
+ const fetchRoutes = async () => {
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
+    const token = storedUser.token;
+
+    const res = await axios.get("/api/routes/provider/my", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setRoutes(Array.isArray(res.data) ? res.data : []);
+  } catch (err) {
+    toast.error(err?.response?.data?.message || "Failed to load provider routes.");
+  }
+};
+  useEffect(() => {
+    fetchRoutes();
+  }, []);
 
   const stats = useMemo(() => {
     const activeRoutes = routes.filter((r) => r.active).length;
+
+    const todaySeats = routes
+      .filter((r) => r.active)
+      .reduce((sum, r) => sum + Number(r.totalSeats || r.seats || 0), 0);
+
+    const estimatedRevenue = routes
+      .filter((r) => r.active)
+      .reduce((sum, r) => {
+        const seats = Number(r.totalSeats || r.seats || 0);
+        const fare = Number(r.fare || r.price || 0);
+        return sum + seats * fare;
+      }, 0);
+
     return {
       activeRoutes,
       totalRoutes: routes.length,
-      todaySeats: activeRoutes * 40,
-      estimatedRevenue: activeRoutes * 40 * 2500,
+      todaySeats,
+      estimatedRevenue,
     };
+  }, [routes]);
+
+  const upcomingDepartures = useMemo(() => {
+    return routes
+      .filter((r) => r.active)
+      .slice(0, 5)
+      .map((r) => ({
+        id: r._id,
+        route: `${r.fromCity || "Unknown"} → ${r.toCity || "Unknown"}`,
+        time: r.departureTime || "N/A",
+        seats: `${Number(r.availableSeats ?? r.totalSeats ?? r.seats ?? 0)} seats remaining`,
+      }));
   }, [routes]);
 
   return (
@@ -24,7 +67,6 @@ const ProviderDashboard = () => {
       <Navbar />
       <main className="flex-1">
         <div className="max-w-6xl mx-auto px-4 pt-6 pb-10 text-white">
-
           {/* Header */}
           <div className="rounded-3xl bg-gradient-to-r from-emerald-500 to-cyan-500 p-[1px] shadow-xl mb-6">
             <div className="rounded-[1.4rem] bg-slate-950/90 px-6 py-5">
@@ -55,19 +97,22 @@ const ProviderDashboard = () => {
             </h2>
 
             <div className="space-y-3 text-xs">
-              <Departure
-                route="Islamabad → Lahore"
-                time="09:00 AM"
-                seats="12 seats remaining"
-              />
-              <Departure
-                route="Lahore → Karachi"
-                time="07:30 PM"
-                seats="5 seats remaining"
-              />
+              {upcomingDepartures.length === 0 ? (
+                <p className="text-[11px] text-slate-400">
+                  No upcoming departures found.
+                </p>
+              ) : (
+                upcomingDepartures.map((d) => (
+                  <Departure
+                    key={d.id}
+                    route={d.route}
+                    time={d.time}
+                    seats={d.seats}
+                  />
+                ))
+              )}
             </div>
           </div>
-
         </div>
       </main>
       <Footer />
@@ -88,9 +133,7 @@ const Departure = ({ route, time, seats }) => (
       <p className="text-slate-200 font-semibold">{route}</p>
       <p className="text-[11px] text-slate-400">Departure: {time}</p>
     </div>
-    <span className="text-cyan-300 font-semibold text-[11px]">
-      {seats}
-    </span>
+    <span className="text-cyan-300 font-semibold text-[11px]">{seats}</span>
   </div>
 );
 

@@ -1,5 +1,8 @@
 const User = require("../models/User");
 
+const Booking = require("../models/Booking");
+const FraudAlert = require("../models/FraudAlert");
+
 // 1) List providers (pending/active/suspended/rejected)
 const listProviders = async (req, res) => {
   try {
@@ -57,6 +60,113 @@ const listProviders = async (req, res) => {
   }
 };
 
+
+const getAdminDashboard = async (req, res) => {
+  try {
+    const totalBookings = await Booking.countDocuments();
+
+    const revenueData = await Booking.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+
+    const totalRevenue = revenueData[0]?.totalRevenue || 0;
+
+    const activeUsers = await User.countDocuments({
+      role: "user",
+      isActive: { $ne: false },
+    });
+
+    const confirmedBookings = await Booking.countDocuments({
+      status: "confirmed",
+    });
+
+    const successRate =
+      totalBookings > 0
+        ? Math.round((confirmedBookings / totalBookings) * 100)
+        : 0;
+
+    const fraudAlerts = await FraudAlert.countDocuments({
+      reviewOutcome: "PENDING",
+    });
+
+    const pendingProviders = await User.countDocuments({
+      role: "provider",
+      $or: [
+        { providerStatus: "pending" },
+        {
+          providerStatus: { $exists: false },
+          isApproved: false,
+          isActive: { $ne: false },
+        },
+      ],
+    });
+
+    const topRoutesData = await Booking.aggregate([
+      {
+        $group: {
+          _id: {
+            from: "$from",
+            to: "$to",
+          },
+          bookings: { $sum: 1 },
+          revenue: { $sum: "$totalAmount" },
+        },
+      },
+      { $sort: { bookings: -1 } },
+      { $limit: 4 },
+    ]);
+
+    const topRoutes = topRoutesData.map((item) => ({
+      route: `${item._id.from || "Unknown"} → ${item._id.to || "Unknown"}`,
+      bookings: item.bookings,
+      revenue: item.revenue || 0,
+    }));
+
+    const recentBookingsData = await Booking.find()
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean();
+
+    const recentBookings = recentBookingsData.map((b) => ({
+      id: b._id,
+      route: `${b.from || "Unknown"} → ${b.to || "Unknown"}`,
+      operator: b.operator || "Unknown Operator",
+      amount: b.totalAmount || 0,
+      seats: Array.isArray(b.seats) ? b.seats.join(", ") : "N/A",
+      time: b.createdAt,
+      status: String(b.status || "pending").toLowerCase(),
+    }));
+
+    const recentUsers = await User.find()
+      .select("name email role")
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean();
+
+    res.json({
+      stats: {
+        totalBookings,
+        totalRevenue,
+        activeUsers,
+        successRate,
+        fraudAlerts,
+        pendingProviders,
+      },
+      topRoutes,
+      recentBookings,
+      recentUsers,
+    });
+  } catch (err) {
+    console.error("Admin dashboard error:", err);
+    res.status(500).json({ message: "Failed to fetch dashboard data." });
+  }
+};
+
 // 2) Approve provider
 const approveProvider = async (req, res) => {
   const provider = await User.findById(req.params.id);
@@ -99,4 +209,65 @@ const suspendProvider = async (req, res) => {
   res.json({ message: "Provider suspended.", provider });
 };
 
-module.exports = { listProviders, approveProvider, rejectProvider, suspendProvider };
+const getAdminReports = async (req, res) => {
+  try {
+    const revenueData = await Booking.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          revenue: { $sum: "$totalAmount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 12 },
+    ]);
+
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+
+    const revenue = revenueData.map((item) => ({
+      month: monthNames[item._id.month - 1],
+      revenue: item.revenue || 0,
+    }));
+
+    const routeData = await Booking.aggregate([
+      {
+        $group: {
+          _id: {
+            from: "$from",
+            to: "$to",
+          },
+          bookings: { $sum: 1 },
+        },
+      },
+      { $sort: { bookings: -1 } },
+      { $limit: 6 },
+    ]);
+
+    const routes = routeData.map((item) => ({
+      route: `${item._id.from || "Unknown"}-${item._id.to || "Unknown"}`,
+      bookings: item.bookings || 0,
+    }));
+
+    res.json({
+      revenue,
+      routes,
+    });
+  } catch (err) {
+    console.error("Admin reports error:", err);
+    res.status(500).json({ message: "Failed to fetch reports." });
+  }
+};
+module.exports = {
+  listProviders,
+  approveProvider,
+  rejectProvider,
+  suspendProvider,
+  getAdminReports,
+  getAdminDashboard,
+};
