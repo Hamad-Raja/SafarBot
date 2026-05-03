@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     recentUsers: [],
   });
 
-  const API_BASE = "";
+  const API_BASE = "https://safarbot-91nr.onrender.com";
 
   const getAuthConfig = () => {
     const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
