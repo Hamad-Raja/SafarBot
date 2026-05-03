@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import RouteInsightsModal from "../components/RouteInsightsModal";
 import { toast } from "react-hot-toast";
-
+import Api from '../api/api'
 const AdminDashboard = () => {
   const [range, setRange] = useState("month");
 
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
     recentUsers: [],
   });
 
-  const API_BASE = "https://safarbot-91nr.onrender.com";
 
   const getAuthConfig = () => {
     const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
@@ -58,7 +57,7 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/api/admin/dashboard`, {
+      const res = await Api.get(`/api/admin/dashboard`, {
         ...getAuthConfig(),
         timeout: 20000,
       });
@@ -88,7 +87,7 @@ const AdminDashboard = () => {
   const fetchDelayRoutes = async () => {
     try {
       setDelayLoading(true);
-      const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+      const res = await Api.get(`/api/routes/provider/my`, {
         ...getAuthConfig(),
         timeout: 20000,
       });
@@ -119,7 +118,7 @@ const AdminDashboard = () => {
       setSelectedRouteId(routeId);
       setInsightsLoadingRouteId(routeId);
 
-      const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+      const res = await Api.get(`/api/insights/route/${routeId}`, {
         ...getAuthConfig(),
         timeout: 20000,
       });
@@ -144,8 +143,8 @@ const AdminDashboard = () => {
     try {
       setSendingAlertRouteId(routeId);
 
-      const res = await axios.post(
-        `${API_BASE}/api/insights/route/${routeId}/send-alert`,
+      const res = await Api.post(
+        `/api/insights/route/${routeId}/send-alert`,
         {},
         {
           ...getAuthConfig(),
@@ -199,11 +198,10 @@ const AdminDashboard = () => {
                       key={v}
                       type="button"
                       onClick={() => setRange(v)}
-                      className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all ${
-                        range === v
+                      className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all ${range === v
                           ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-md shadow-cyan-500/30"
                           : "text-slate-300 hover:text-white"
-                      }`}
+                        }`}
                     >
                       {v.toUpperCase()}
                     </button>
@@ -273,11 +271,10 @@ const AdminDashboard = () => {
                         <div
                           className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
                           style={{
-                            width: `${
-                              stats.totalBookings > 0
+                            width: `${stats.totalBookings > 0
                                 ? Math.min(100, (r.bookings / stats.totalBookings) * 100)
                                 : 0
-                            }%`,
+                              }%`,
                           }}
                         />
                       </div>
@@ -389,11 +386,10 @@ const AdminDashboard = () => {
                               </div>
 
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] border ${
-                                  r.active
+                                className={`px-2 py-0.5 rounded-full text-[10px] border ${r.active
                                     ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
                                     : "bg-slate-800 text-slate-300 border-slate-600/60"
-                                }`}
+                                  }`}
                               >
                                 {r.active ? "Active" : "Paused"}
                               </span>
@@ -409,8 +405,8 @@ const AdminDashboard = () => {
                                 {insightsLoading
                                   ? "Loading..."
                                   : isModalOpen
-                                  ? "Close Insights"
-                                  : "Check Insights"}
+                                    ? "Close Insights"
+                                    : "Check Insights"}
                               </button>
                             </div>
                           </div>
@@ -443,11 +439,10 @@ const AdminDashboard = () => {
                         </div>
 
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${
-                            u.role === "provider"
+                          className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${u.role === "provider"
                               ? "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30"
                               : "bg-cyan-500/15 text-cyan-300 border border-cyan-400/30"
-                          }`}
+                            }`}
                         >
                           {u.role}
                         </span>

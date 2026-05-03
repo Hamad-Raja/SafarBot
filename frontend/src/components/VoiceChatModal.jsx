@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import Api from '../api/api';
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const VoiceChatModal = ({ open, onClose, onCriteria }) => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
     (async () => {
       try {
-        const res = await axios.get("/api/chat-history/latest", {
+        const res = await Api.get("/api/chat-history/latest", {
           withCredentials: true,
           timeout: 60000,
         });
@@ -151,7 +152,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
     try {
       if (sessionId) {
-        await axios.delete(`/api/chat-history/session/${sessionId}`, {
+        await Api.delete(`/api/chat-history/session/${sessionId}`, {
           withCredentials: true,
           timeout: 60000,
         });
@@ -180,7 +181,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     try {
       setProcessing(true);
 
-      const res = await axios.post(
+      const res = await Api.post(
         "/api/chat/message",
         { sessionId, message: t },
         { withCredentials: true, timeout: 180000 }
@@ -285,7 +286,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
         fd.append("sessionId", sessionId);
       }
 
-      const res = await axios.post("/api/voice/chat", fd, {
+      const res = await Api.post("/api/voice/chat", fd, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
         timeout: 180000,

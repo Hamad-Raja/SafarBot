@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { FALLBACK_ROUTES } from "../data/dummyRoutes";
 import { toast } from "react-hot-toast";
+import Api from '../api/api';
 import axios from "axios";
 
 const SeatSelector = () => {
@@ -35,7 +36,7 @@ const SeatSelector = () => {
         }
 
         setLoading(true);
-        const res = await axios.get(`/api/routes/${routeId}`);
+        const res = await Api.get(`/api/routes/${routeId}`);
         setRoute(res.data || null);
       } catch (e) {
         console.error("Failed to load route:", e);

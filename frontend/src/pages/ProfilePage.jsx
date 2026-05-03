@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import Api from '../api/api';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +21,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchBookingCount = async () => {
       try {
-        const res = await axios.get("/api/bookings/my");
+        const res = await Api.get("/api/bookings/my");
         setBookingCount(Array.isArray(res.data) ? res.data.length : 0);
       } catch (err) {
         console.error(err);
@@ -41,7 +41,7 @@ const ProfilePage = () => {
       const payload = { name: profileName };
       if (newPassword) payload.password = newPassword;
 
-      const res = await axios.put("/api/auth/profile", payload);
+      const res = await Api.put("/api/auth/profile", payload);
       updateProfileLocally(res.data);
 
       setNewPassword("");

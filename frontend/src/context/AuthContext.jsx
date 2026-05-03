@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import Api from '../api/api';
 
 const AuthContext = createContext(null);
 
 const setAuthHeader = (user) => {
   if (user?.token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
+    Api.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
   } else {
-    delete axios.defaults.headers.common['Authorization'];
+    delete Api.defaults.headers.common['Authorization'];
   }
 };
 
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   const register = async ({ name, email, password, role }) => {
     setLoading(true);
     try {
-      await axios.post('/api/auth/signup', { name, email, password, role });
+      await Api.post('/api/auth/signup', { name, email, password, role });
       return { success: true };
     } catch (err) {
       console.error(err);
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ email, password }) => {
     setLoading(true);
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await Api.post('/api/auth/login', { email, password });
       const payload = {
         ...res.data,
         role: res.data.role ? String(res.data.role).toLowerCase() : 'user',

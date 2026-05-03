@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import Api from '../api/api';
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -51,7 +51,7 @@ const PaymentPage = () => {
     setProcessing(true);
 
     try {
-      const res = await axios.post(
+      const res = await Api.post(
         "/api/bookings",
         {
           routeId,

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import Api from '../api/api';
 import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -38,12 +38,12 @@ const ProviderRoutesPage = () => {
   const [sendingAlertRouteId, setSendingAlertRouteId] = useState(null);
   const [alertResultsByRoute, setAlertResultsByRoute] = useState({});
 
-  const API_BASE = "";
+  
 
   const fetchRoutes = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE}/api/routes/provider/my`, {
+      const res = await Api.get(`/api/routes/provider/my`, {
         timeout: 20000,
       });
       setRoutes(Array.isArray(res.data) ? res.data : []);
@@ -104,7 +104,7 @@ const ProviderRoutesPage = () => {
         busName: form.busName?.trim() || "",
       };
 
-      const res = await axios.post(`${API_BASE}/api/routes`, payload, {
+      const res = await Api.post(`/api/routes`, payload, {
         timeout: 20000,
       });
 
@@ -131,8 +131,8 @@ const ProviderRoutesPage = () => {
   const toggle = async (id, currentActive) => {
     try {
       setLoading(true);
-      const res = await axios.patch(
-        `${API_BASE}/api/routes/${id}`,
+      const res = await Api.patch(
+        `/api/routes/${id}`,
         { active: !currentActive },
         { timeout: 20000 }
       );
@@ -149,7 +149,7 @@ const ProviderRoutesPage = () => {
   const remove = async (id) => {
     try {
       setLoading(true);
-      await axios.delete(`${API_BASE}/api/routes/${id}`, { timeout: 20000 });
+      await Api.delete(`/api/routes/${id}`, { timeout: 20000 });
       setRoutes((prev) => prev.filter((r) => r._id !== id));
 
       setInsightsByRoute((prev) => {
@@ -194,7 +194,7 @@ const ProviderRoutesPage = () => {
       setSelectedRouteId(routeId);
       setInsightsLoadingRouteId(routeId);
 
-      const res = await axios.get(`${API_BASE}/api/insights/route/${routeId}`, {
+      const res = await Api.get(`/api/insights/route/${routeId}`, {
         timeout: 20000,
       });
 
@@ -218,8 +218,8 @@ const ProviderRoutesPage = () => {
     try {
       setSendingAlertRouteId(routeId);
 
-      const res = await axios.post(
-        `${API_BASE}/api/insights/route/${routeId}/send-alert`,
+      const res = await Api.post(
+        `/api/insights/route/${routeId}/send-alert`,
         {},
         { timeout: 30000 }
       );

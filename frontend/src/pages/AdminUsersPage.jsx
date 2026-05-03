@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import Api from '../api/api';
 import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -13,7 +13,7 @@ const AdminUsersPage = () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
 
-      const res = await axios.get("/api/admin/providers", {
+      const res = await Api.get("/api/admin/providers", {
         headers: {
           Authorization: `Bearer ${storedUser.token}`,
         },

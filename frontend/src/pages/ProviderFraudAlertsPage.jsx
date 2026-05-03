@@ -1,12 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import API from "../api/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN ||
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000";
 
 const defaultStats = {
   totalAlerts: 0,
@@ -51,10 +47,10 @@ const ProviderFraudAlertsPage = () => {
 
   const fetchAlerts = async () => {
     const [alertsRes, statsRes] = await Promise.all([
-      axios.get(`${API_BASE}/api/fraud-alerts/provider`, {
+      API.get(`/api/fraud-alerts/provider`, {
         headers: authHeaders,
       }),
-      axios.get(`${API_BASE}/api/fraud-alerts/provider/stats`, {
+      API.get(`/api/fraud-alerts/provider/stats`, {
         headers: authHeaders,
       }),
     ]);
@@ -120,8 +116,8 @@ const ProviderFraudAlertsPage = () => {
         reviewNotes: "",
       };
 
-      const res = await axios.patch(
-        `${API_BASE}/api/fraud-alerts/${id}/review`,
+      const res = await API.patch(
+        `/api/fraud-alerts/${id}/review`,
         {
           reviewOutcome: form.reviewOutcome,
           reviewNotes: form.reviewNotes,
@@ -144,8 +140,8 @@ const ProviderFraudAlertsPage = () => {
       }));
 
       try {
-        const statsRes = await axios.get(
-          `${API_BASE}/api/fraud-alerts/provider/stats`,
+        const statsRes = await API.get(
+          `/api/fraud-alerts/provider/stats`,
           {
             headers: authHeaders,
           }
@@ -297,11 +293,9 @@ const ProviderFraudAlertsPage = () => {
                   ? booking.seats.length
                   : 0;
 
-                const detail = `Booking: ${booking.from || "-"} → ${
-                  booking.to || "-"
-                } | Seats: ${seatsCount} | Date: ${
-                  booking.travelDate || "-"
-                } | Score: ${score}`;
+                const detail = `Booking: ${booking.from || "-"} → ${booking.to || "-"
+                  } | Seats: ${seatsCount} | Date: ${booking.travelDate || "-"
+                  } | Score: ${score}`;
 
                 const form = reviewForms[a._id] || {
                   reviewOutcome: a?.reviewOutcome || "PENDING",
@@ -321,13 +315,12 @@ const ProviderFraudAlertsPage = () => {
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] ${
-                            severity === "high"
-                              ? "bg-red-500/20 text-red-300"
-                              : severity === "medium"
+                          className={`px-2 py-0.5 rounded-full text-[10px] ${severity === "high"
+                            ? "bg-red-500/20 text-red-300"
+                            : severity === "medium"
                               ? "bg-amber-500/20 text-amber-300"
                               : "bg-emerald-500/20 text-emerald-300"
-                          }`}
+                            }`}
                         >
                           {severity.toUpperCase()}
                         </span>
@@ -397,26 +390,26 @@ const ProviderFraudAlertsPage = () => {
                     {(a?.reviewed ||
                       a?.reviewOutcome === "FRAUD" ||
                       a?.reviewOutcome === "LEGIT") && (
-                      <div className="mt-3 text-[11px] text-slate-400">
-                        <p>
-                          Reviewed:{" "}
-                          <span className="text-slate-200 font-medium">
-                            {a?.reviewedAt
-                              ? new Date(a.reviewedAt).toLocaleString()
-                              : "Yes"}
-                          </span>
-                        </p>
-
-                        {reviewedByName && (
-                          <p className="mt-1">
-                            Reviewed by:{" "}
+                        <div className="mt-3 text-[11px] text-slate-400">
+                          <p>
+                            Reviewed:{" "}
                             <span className="text-slate-200 font-medium">
-                              {reviewedByName}
+                              {a?.reviewedAt
+                                ? new Date(a.reviewedAt).toLocaleString()
+                                : "Yes"}
                             </span>
                           </p>
-                        )}
-                      </div>
-                    )}
+
+                          {reviewedByName && (
+                            <p className="mt-1">
+                              Reviewed by:{" "}
+                              <span className="text-slate-200 font-medium">
+                                {reviewedByName}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+                      )}
                   </div>
                 );
               })}

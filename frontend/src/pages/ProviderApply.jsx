@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import logo from "../assets/logo.jpeg";
+import Api from '../api/api';
 
 const ProviderApply = () => {
   const navigate = useNavigate();
@@ -77,23 +78,17 @@ const ProviderApply = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("https://safarbot-91nr.onrender.com/api/auth/provider/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: fullName,
-          email,
-          password,
-
-          // extra provider fields
-          contactNumber,
-          companyName,
-          businessAddress,
-          city,
-          cnic,
-          licenseNumber,
-          fleetSize: fleetSize ? Number(fleetSize) : null,
-        }),
+      const res = await Api.post("/api/auth/provider/register", {
+        name: fullName,
+        email,
+        password,
+        contactNumber,
+        companyName,
+        businessAddress,
+        city,
+        cnic,
+        licenseNumber,
+        fleetSize: fleetSize ? Number(fleetSize) : null,
       });
 
       const data = await res.json();
