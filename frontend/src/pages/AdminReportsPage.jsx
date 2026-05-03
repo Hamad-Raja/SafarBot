@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import axios from "axios";
+import Api from '../api/api';
 import { toast } from "react-hot-toast";
 import {
   LineChart,
@@ -25,7 +25,7 @@ const AdminReportsPage = () => {
     const storedUser = JSON.parse(localStorage.getItem("safarbot_user") || "{}");
     const token = storedUser.token;
 
-    const res = await axios.get(`/api/admin/reports?range=${range}`, {
+    const res = await Api.get(`/api/admin/reports?range=${range}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

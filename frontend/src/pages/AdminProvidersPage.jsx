@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import API from "../api/api";
 
 const AdminProvidersPage = () => {
   const [providers, setProviders] = useState([]);
@@ -26,7 +26,7 @@ const AdminProvidersPage = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
+      const res = await API.get(
         `/api/admin/providers?status=${statusFilter}`,
         getAuthConfig()
       );
@@ -79,7 +79,7 @@ const AdminProvidersPage = () => {
 
   const approve = async (id) => {
     try {
-      await axios.put(
+      await API.put(
         `/api/admin/providers/${id}/approve`,
         {},
         getAuthConfig()
@@ -94,7 +94,7 @@ const AdminProvidersPage = () => {
 
   const suspend = async (id) => {
     try {
-      await axios.put(
+      await API.put(
         `/api/admin/providers/${id}/suspend`,
         {},
         getAuthConfig()
@@ -114,7 +114,7 @@ const AdminProvidersPage = () => {
     );
 
     try {
-      await axios.put(
+      await API.put(
         `/api/admin/providers/${id}/reject`,
         { reason: reason || "" },
         getAuthConfig()

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Api from '../api/api';
 import axios from "axios";
 import Select from "react-select";
 import { toast } from "react-hot-toast";
@@ -57,7 +58,7 @@ const SearchForm = () => {
       params.append("date", date);
       params.append("active", "true");
 
-      const res = await axios.get(`/api/routes?${params.toString()}`);
+      const res = await Api.get(`/api/routes?${params.toString()}`);
 
       const routes = Array.isArray(res.data)
         ? res.data.map((route) => normalizeRoute(route))

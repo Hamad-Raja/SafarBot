@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import Api from "../api/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -39,7 +39,7 @@ const MyBookingsPage = () => {
         setLoading(true);
         setError("");
 
-        const res = await axios.get("/api/bookings/my");
+        const res = await Api.get("/api/bookings/my");
         setBookings(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);

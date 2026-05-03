@@ -7,8 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 
 
-axios.defaults.baseURL = import.meta.env.VITE_API_ORIGIN;
-axios.defaults.withCredentials = true;
+
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
