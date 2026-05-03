@@ -27,7 +27,7 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = (
   process.env.CORS_ORIGIN ||
-  "http://localhost:5173,http://localhost:3000"
+  "http://localhost:5173,http://localhost:3000,https://safar-bot.vercel.app"
 )
   .split(",")
   .map((origin) => origin.trim())
@@ -49,7 +49,11 @@ app.use(
   })
 );
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 app.use(
@@ -65,7 +69,20 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(process.cwd(), "uploads"))
+);
 
 connectDB();
 
