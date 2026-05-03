@@ -77,7 +77,7 @@ const ProviderApply = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/auth/provider/register", {
+      const res = await fetch("https://safarbot-91nr.onrender.com/api/auth/provider/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
