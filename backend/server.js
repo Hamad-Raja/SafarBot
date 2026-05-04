@@ -12,6 +12,7 @@ dotenv.config();
 
 const authRoutes = require("./routes/authRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 const routeRoutes = require("./routes/routeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const chatRoutes = require("./routes/chatRoutes");
@@ -102,6 +103,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);

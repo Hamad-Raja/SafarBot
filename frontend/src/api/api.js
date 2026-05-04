@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_ORIGIN || "https://safarbot-91nr.onrender.com",
+  baseURL: import.meta.env.VITE_API_ORIGIN || "https://safarbot-cbzm.onrender.com",
   withCredentials: true,
 });
 

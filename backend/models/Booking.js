@@ -98,6 +98,31 @@ const bookingSchema = new mongoose.Schema(
       min: 0,
     },
 
+    paymentProvider: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["", "PAID", "UNPAID", "FAILED", "REFUNDED"],
+      default: "",
+      trim: true,
+    },
+
+    stripeSessionId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    stripePaymentIntentId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     travelDate: {
       type: String,
       default: "",
@@ -165,6 +190,7 @@ bookingSchema.index({ route: 1, createdAt: -1 });
 bookingSchema.index({ status: 1, createdAt: -1 });
 bookingSchema.index({ from: 1, to: 1, travelDate: 1 });
 bookingSchema.index({ deviceId: 1, createdAt: -1 });
+bookingSchema.index({ stripeSessionId: 1 });
 
 const Booking = mongoose.model("Booking", bookingSchema);
 
