@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { CheckCircle2, Loader2, OctagonAlert } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Api from "../api/api";
@@ -56,7 +57,9 @@ const PaymentSuccessPage = () => {
 
         if (bookingStatus === "CONFIRMED") {
           setStatus("confirmed");
-          setMessage("Seats reserved successfully. A confirmation has been stored in your SafarBot account.");
+          setMessage(
+            "Seats reserved successfully. A confirmation has been stored in your SafarBot account."
+          );
           toast.success("Booking confirmed successfully.");
           return;
         }
@@ -92,40 +95,57 @@ const PaymentSuccessPage = () => {
     status === "processing"
       ? "Confirming your booking..."
       : status === "failed"
-      ? "Payment received, booking needs attention"
+      ? "Booking needs attention"
       : status === "review"
       ? "Your booking is under review"
-      : "Your booking is confirmed!";
+      : "Your booking is confirmed";
+
+  const Icon =
+    status === "processing"
+      ? Loader2
+      : status === "failed"
+      ? OctagonAlert
+      : CheckCircle2;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
-      <main className="flex-1 flex items-center justify-center">
-        <div className="max-w-md w-full mx-auto px-4">
-          <div className="bg-slate-900/80 rounded-3xl border border-emerald-400/40 shadow-2xl shadow-emerald-500/30 p-6 text-center text-white">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-emerald-500/20 border border-emerald-400/60 flex items-center justify-center text-3xl">
-              {status === "failed" ? "!" : status === "processing" ? "..." : "OK"}
-            </div>
-
-            <h1 className="text-xl font-bold mb-1">{title}</h1>
-
-            <p className="text-xs text-slate-300 mb-3">{message}</p>
-
-            {bookingRef && (
-              <p className="text-[11px] text-emerald-300 mb-3">
-                Booking reference: <span className="font-semibold">{bookingRef}</span>
-              </p>
-            )}
-
-            <button
-              type="button"
-              onClick={() => navigate("/my-bookings")}
-              className="w-full bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-semibold rounded-2xl py-2.5 mt-2 text-sm shadow-lg shadow-emerald-500/40 hover:shadow-emerald-400/60 transition-all"
-            >
-              Go to My Bookings
-            </button>
+      <main className="flex min-h-[62vh] items-center justify-center px-4 py-12">
+        <section className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white p-6 text-center shadow-sm shadow-slate-900/5">
+          <div
+            className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full ${
+              status === "failed"
+                ? "bg-red-50 text-red-700"
+                : status === "processing"
+                ? "bg-blue-50 text-blue-700"
+                : "bg-emerald-50 text-emerald-700"
+            }`}
+          >
+            <Icon
+              size={30}
+              className={status === "processing" ? "animate-spin" : ""}
+            />
           </div>
-        </div>
+
+          <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+          <p className="mt-2 text-sm font-medium leading-relaxed text-slate-600">
+            {message}
+          </p>
+
+          {bookingRef && (
+            <p className="mt-4 rounded-2xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
+              Booking reference: {bookingRef}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={() => navigate("/my-bookings")}
+            className="mt-5 h-12 w-full rounded-[18px] bg-blue-700 text-sm font-bold text-white shadow-lg shadow-blue-900/15 transition-colors hover:bg-blue-800"
+          >
+            Go to My Bookings
+          </button>
+        </section>
       </main>
       <Footer />
     </div>

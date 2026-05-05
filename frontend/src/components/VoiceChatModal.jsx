@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Api from '../api/api';
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Mic2, Send, Square, X } from "lucide-react";
 
 const VoiceChatModal = ({ open, onClose, onCriteria }) => {
   const navigate = useNavigate();
@@ -11,11 +11,15 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
   const [text, setText] = useState("");
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [voiceLevel, setVoiceLevel] = useState(0);
+  const [responsePlaying, setResponsePlaying] = useState(false);
   const [sessionId, setSessionId] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const listRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const animationRef = useRef(null);
 
   // Backend origin for /uploads voice files
   const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || "http://localhost:5000";
@@ -25,6 +29,53 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     if (u.startsWith("blob:")) return u;
     if (u.startsWith("http://") || u.startsWith("https://")) return u;
     return `${API_ORIGIN}${u.startsWith("/") ? "" : "/"}${u}`;
+  };
+
+  const cleanupVoiceMeter = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+
+    setVoiceLevel(0);
+  };
+
+  const startVoiceMeter = (stream) => {
+    cleanupVoiceMeter();
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaStreamSource(stream);
+
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    audioContextRef.current = audioContext;
+
+    const data = new Uint8Array(analyser.fftSize);
+
+    const tick = () => {
+      analyser.getByteTimeDomainData(data);
+
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        const centered = data[i] - 128;
+        sum += centered * centered;
+      }
+
+      const rms = Math.sqrt(sum / data.length);
+      setVoiceLevel(rms > 3 ? Math.min(1, rms / 24) : 0);
+      animationRef.current = requestAnimationFrame(tick);
+    };
+
+    tick();
   };
 
   const pushMsg = (m) => setMessages((prev) => [...prev, m]);
@@ -90,14 +141,28 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     });
   }, [messages, open]);
 
+  useEffect(() => {
+    if (open) return;
+
+    cleanupVoiceMeter();
+    setRecording(false);
+    setProcessing(false);
+    setResponsePlaying(false);
+  }, [open]);
+
   if (!open) return null;
 
   const playAudioUrl = async (url) => {
     try {
       if (!url) return;
       const a = new Audio(url);
+      a.onplay = () => setResponsePlaying(true);
+      a.onended = () => setResponsePlaying(false);
+      a.onpause = () => setResponsePlaying(false);
+      a.onerror = () => setResponsePlaying(false);
       await a.play();
     } catch {
+      setResponsePlaying(false);
       // Browser may block autoplay. User can replay from controls.
     }
   };
@@ -277,6 +342,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      startVoiceMeter(stream);
 
       chunksRef.current = [];
 
@@ -297,6 +363,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
       mr.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
+        cleanupVoiceMeter();
 
         const blob = new Blob(chunksRef.current, {
           type: mr.mimeType || "audio/webm",
@@ -326,6 +393,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
       mediaRecorderRef.current.stop();
     } finally {
       setRecording(false);
+      cleanupVoiceMeter();
     }
   };
 
@@ -414,16 +482,51 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     }
   };
 
+  const VoiceGrains = () => {
+    const active = recording || responsePlaying;
+    const liveLevel = responsePlaying ? 0.82 : voiceLevel;
+    const visible = active && liveLevel > 0.02;
+    const dots = Array.from({ length: 18 });
+
+    return (
+      <div
+        className={`pointer-events-none absolute left-1/2 top-20 flex -translate-x-1/2 items-center justify-center gap-1.5 transition-all duration-300 ${
+          visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+        aria-hidden="true"
+      >
+        {dots.map((_, index) => {
+          const wave = Math.sin(index * 0.9 + liveLevel * 5);
+          const size = 4 + Math.max(0.1, liveLevel) * (8 + wave * 5);
+
+          return (
+            <span
+              key={index}
+              className="rounded-full bg-blue-700/70 shadow-[0_0_18px_rgba(29,78,216,0.35)]"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                animation: responsePlaying
+                  ? `pulse ${0.7 + (index % 4) * 0.08}s ease-in-out infinite`
+                  : undefined,
+              }}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+
   const Bubble = ({ m }) => {
     const isUser = m.sender === "user";
 
     return (
       <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
         <div
-          className={`max-w-[85%] rounded-2xl px-3 py-2 text-xs border ${
+          className={`max-w-[85%] rounded-2xl px-3 py-2 text-xs border shadow-sm backdrop-blur-xl ${
             isUser
-              ? "bg-cyan-500/15 border-cyan-400/25 text-slate-100"
-              : "bg-slate-900/70 border-white/10 text-slate-100"
+              ? "bg-blue-700 text-white border-blue-700/20"
+              : "bg-white/70 border-white/60 text-slate-800"
           }`}
         >
           {m.type === "text" && (
@@ -436,7 +539,14 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
 
           {m.type === "text" && m.sender === "bot" && m.audioUrl && (
             <div className="mt-2">
-              <audio controls src={m.audioUrl} className="w-56" />
+              <audio
+                controls
+                src={m.audioUrl}
+                className="w-56"
+                onPlay={() => setResponsePlaying(true)}
+                onPause={() => setResponsePlaying(false)}
+                onEnded={() => setResponsePlaying(false)}
+              />
             </div>
           )}
 
@@ -449,20 +559,18 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/45 backdrop-blur-md"
         onClick={() => !processing && onClose?.()}
       />
 
-      <div className="relative w-full max-w-2xl rounded-3xl border border-cyan-500/30 bg-slate-900 shadow-2xl shadow-cyan-500/20 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-slate-950/40">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/45 bg-white/45 shadow-2xl shadow-blue-900/20 ring-1 ring-white/25 backdrop-blur-2xl">
+        <VoiceGrains />
+
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/45 bg-white/35">
           <div>
-            <h2 className="text-sm md:text-base font-extrabold text-white">
+            <h2 className="text-sm md:text-base font-extrabold text-slate-950">
               SafarBot Voice Assistant
             </h2>
-            <p className="text-[11px] text-slate-400">
-              Text → text reply. Voice → voice reply.{" "}
-              {processing ? "Processing..." : "Ready"}
-            </p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -470,7 +578,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               type="button"
               onClick={clearChat}
               disabled={processing}
-              className="h-9 px-3 rounded-2xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-700 transition text-xs"
+              className="h-9 px-3 rounded-2xl border border-white/60 bg-white/60 text-slate-700 shadow-sm transition-colors hover:bg-white disabled:opacity-50 text-xs"
             >
               Clear
             </button>
@@ -478,8 +586,9 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
             <button
               type="button"
               onClick={() => !processing && onClose?.()}
-              className="h-9 w-9 rounded-2xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+              className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/60 bg-white/60 text-[0px] text-transparent shadow-sm transition-colors hover:bg-white"
             >
+              <X size={16} className="text-slate-700" />
               ✕
             </button>
           </div>
@@ -490,7 +599,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
           className="h-[55vh] md:h-[60vh] overflow-y-auto p-4 space-y-3"
         >
           {messages.length === 0 ? (
-            <div className="text-center text-slate-400 text-xs mt-8">
+            <div className="text-center text-slate-500 text-xs mt-8">
               Try voice: “Islamabad se Lahore kal”
             </div>
           ) : (
@@ -498,20 +607,20 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
           )}
 
           {processing && (
-            <div className="text-center text-[11px] text-slate-400">
+            <div className="text-center text-[11px] text-slate-500">
               SafarBot is thinking...
             </div>
           )}
         </div>
 
-        <div className="p-4 border-t border-white/10 bg-slate-950/40">
+        <div className="p-4 border-t border-white/45 bg-white/35">
           <div className="flex gap-2 items-center">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendText()}
               placeholder="Type your message..."
-              className="flex-1 rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+              className="flex-1 rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 shadow-sm outline-none transition focus:ring-2 focus:ring-blue-600/30"
               disabled={processing}
             />
 
@@ -519,9 +628,10 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               type="button"
               onClick={sendText}
               disabled={processing}
-              className="px-4 py-2 rounded-2xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-200 hover:bg-cyan-500/25 transition text-sm"
+              className="flex h-10 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition-colors hover:bg-blue-800 disabled:opacity-50"
             >
-              Send
+              <Send size={16} />
+              <span className="hidden sm:inline">Send</span>
             </button>
 
             {!recording ? (
@@ -529,26 +639,24 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
                 type="button"
                 onClick={startRecording}
                 disabled={processing}
-                className="px-4 py-2 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25 transition text-sm"
+              className="flex h-10 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 px-4 text-[0px] font-semibold text-transparent transition-colors hover:bg-blue-100 disabled:opacity-50"
               >
+                <Mic2 size={17} className="text-blue-700" />
                 🎙
               </button>
             ) : (
               <button
                 type="button"
                 onClick={stopRecording}
-                className="px-4 py-2 rounded-2xl bg-red-500/15 border border-red-400/30 text-red-200 hover:bg-red-500/25 transition text-sm"
+                className="flex h-10 items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 text-[0px] font-semibold text-transparent transition-colors hover:bg-red-100"
               >
+                <Square size={14} className="text-red-700" />
+                <span className="hidden text-sm text-red-700 sm:inline">Stop</span>
                 ⏹ Stop
               </button>
             )}
           </div>
 
-          <p className="mt-2 text-[10px] text-slate-500">
-            Voice is sent as{" "}
-            <span className="text-slate-300">audio/webm</span>. Voice replies
-            are returned by backend TTS and can be replayed.
-          </p>
         </div>
       </div>
     </div>

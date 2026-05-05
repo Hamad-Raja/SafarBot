@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowLeft, BusFront } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -16,49 +17,59 @@ const RoutesPage = () => {
   const dateLabel = criteria?.date || "-";
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
 
-      <main className="flex-1">
-        <div className="max-w-5xl mx-auto px-4 pt-6 pb-10">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-xs text-slate-400 hover:text-cyan-300 mb-3"
-          >
-            ← Back
-          </button>
+      <main className="mx-auto max-w-5xl px-4 pb-12 pt-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+        >
+          <ArrowLeft size={15} />
+          Back
+        </button>
 
-          <h1 className="text-2xl font-bold text-white mb-1">
-            Available Routes
-          </h1>
-
-          {criteria && (
-            <p className="text-xs text-slate-400 mb-4">
-              {fromLabel} → {toLabel} • {dateLabel}
-            </p>
-          )}
-
-          {routes.length === 0 ? (
-            <div className="mt-6 bg-slate-900/70 rounded-3xl p-6 border border-dashed border-white/10 text-center text-sm text-slate-300">
-              {criteria ? (
-                <>
-                  No routes found for your search. Try different cities or another
-                  travel date.
-                </>
-              ) : (
-                <>
-                  No route data found. Please go back and search again.
-                </>
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/5 sm:p-7">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
+                <BusFront size={15} />
+                Search Results
+              </p>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight">
+                Available Routes
+              </h1>
+              {criteria && (
+                <p className="mt-2 text-sm font-semibold text-slate-600">
+                  {fromLabel} to {toLabel} | {dateLabel}
+                </p>
               )}
             </div>
+
+            <span className="self-start rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 sm:self-auto">
+              {routes.length} found
+            </span>
+          </div>
+
+          {routes.length === 0 ? (
+            <div className="mt-7 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-7 text-center">
+              <p className="text-sm font-bold text-slate-800">
+                {criteria
+                  ? "No routes found for this search."
+                  : "No route data found."}
+              </p>
+              <p className="mt-1 text-xs font-medium text-slate-500">
+                Try different cities or another travel date.
+              </p>
+            </div>
           ) : (
-            <div className="mt-4 space-y-4">
+            <div className="mt-7 space-y-4">
               {routes.map((r) => (
                 <RouteCard key={r?._id || r?.id} route={r} />
               ))}
             </div>
           )}
-        </div>
+        </section>
       </main>
 
       <Footer />
