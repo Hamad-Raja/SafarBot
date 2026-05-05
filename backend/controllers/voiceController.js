@@ -401,28 +401,13 @@ exports.voiceChat = async (req, res) => {
       aiData.message ||
       "OK";
 
-    const slots = extractSlots(aiData);
-
-    if (
-      (aiData.next_action === "CALL_GET_ROUTES" ||
-        aiData.action === "CALL_GET_ROUTES" ||
-        newRoutesPreview.length) &&
-      newRoutesPreview.length
-    ) {
-      replyText = formatRoutesReply({
-        slots,
-        routes: newRoutesPreview,
-        fallback: replyText,
-      });
-    }
-
     if (mappedAction.nextAction === "OPEN_SEATS") {
       replyText = buildSelectedRouteReply(mappedAction.selectedRoute);
     }
 
     const audioMime = aiData.audio_mime_type || aiData.audioMime || "audio/mpeg";
     const botAudioBuffer = audioBase64ToBuffer(
-      aiData.audio_base64 || aiData.audioBase64
+      aiData.audio_base64 || aiData.audioBase64 || aiData.audio
     );
 
     let savedBotAudioUrl = null;
@@ -464,7 +449,7 @@ exports.voiceChat = async (req, res) => {
       selectedRouteId: mappedAction.selectedRouteId,
       nextAction: mappedAction.nextAction,
 
-      audioBase64: aiData.audio_base64 || aiData.audioBase64 || null,
+      audioBase64: aiData.audio_base64 || aiData.audioBase64 || aiData.audio || null,
       audioMime,
 
       savedUserAudioUrl,
