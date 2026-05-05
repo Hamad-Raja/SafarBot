@@ -1,0 +1,12 @@
+
+> safarbot-backend@2.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.11[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+SafarBot backend running on http://localhost:5000
+MongoDB Connected: ac-fnakld6-shard-00-02.ykbcwrv.mongodb.net
+[0mGET /health [32m200[0m 17.729 ms - 119[0m

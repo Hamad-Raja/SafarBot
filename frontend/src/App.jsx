@@ -17,6 +17,7 @@ import NotFound from './pages/NotFound';
 
 import MyBookingsPage from './pages/MyBookingsPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentFailedPage from './pages/PaymentFailedPage';
 import ProviderRoutesPage from './pages/ProviderRoutesPage';
 import ProviderFraudAlertsPage from './pages/ProviderFraudAlertsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/seats/:routeId" element={<BookingPage />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
+        <Route path="/payment-failed" element={<PaymentFailedPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />

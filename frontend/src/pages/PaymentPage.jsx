@@ -52,10 +52,11 @@ const PaymentPage = () => {
 
     try {
       const res = await Api.post(
-        "/api/bookings",
+        "/api/payments/create-checkout-session",
         {
           routeId,
           seats: selectedSeatLabels,
+          amount: Number(route?.price || 0) * selectedSeatLabels.length,
           travelDate,
         },
         {
@@ -65,37 +66,15 @@ const PaymentPage = () => {
         }
       );
 
-      const booking = res.data || {};
-      const bookingId = booking?._id || null;
-      const bookingStatus = String(booking?.status || "").toUpperCase();
-
-      if (bookingStatus === "CONFIRMED") {
-        setSuccess(true);
-        toast.success("Booking confirmed successfully.");
-
-        setTimeout(() => {
-          navigate("/payment-success", { state: { bookingId } });
-        }, 1200);
-
-        return;
+      if (!res.data?.url) {
+        throw new Error("Stripe checkout URL missing.");
       }
 
-      if (bookingStatus === "REVIEW") {
-        toast("Your booking is under review.");
-        navigate("/my-bookings");
-        return;
-      }
-
-      if (bookingStatus === "BLOCKED") {
-        toast.error("This booking was blocked by fraud checks.");
-        return;
-      }
-
-      toast("Booking created with status: " + (bookingStatus || "PENDING"));
-      navigate("/my-bookings");
+      setSuccess(true);
+      window.location.href = res.data.url;
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Unable to create booking.");
+      toast.error(err?.response?.data?.message || "Unable to start Stripe checkout.");
     } finally {
       setProcessing(false);
     }
@@ -134,7 +113,7 @@ const PaymentPage = () => {
 
                 <div className="flex justify-between text-xs text-slate-400">
                   <span>Payment method</span>
-                  <span>JazzCash / Easypaisa (demo)</span>
+                  <span>Stripe card checkout</span>
                 </div>
               </div>
 
@@ -142,7 +121,7 @@ const PaymentPage = () => {
 
               {success ? (
                 <div className="text-center text-xs text-emerald-300">
-                  Booking confirmed. Redirecting to confirmation...
+                  Redirecting to secure checkout...
                 </div>
               ) : (
                 <button
@@ -150,7 +129,7 @@ const PaymentPage = () => {
                   disabled={processing}
                   className="w-full bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-semibold rounded-2xl py-2.5 mt-2 shadow-lg shadow-emerald-500/40 hover:shadow-emerald-400/60 transition-all disabled:opacity-60 text-sm"
                 >
-                  {processing ? "Processing..." : "Pay & Confirm Booking"}
+                  {processing ? "Processing..." : "Continue to Secure Payment"}
                 </button>
               )}
             </>

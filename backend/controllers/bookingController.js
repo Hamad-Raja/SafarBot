@@ -1,4 +1,5 @@
 const axios = require("axios");
+const Stripe = require("stripe");
 const Booking = require("../models/Booking");
 const FraudAlert = require("../models/FraudAlert");
 const Route = require("../models/RouteM");
@@ -8,6 +9,10 @@ const AI_SERVICE_URL =
   process.env.FRAUD_SERVICE_URL ||
   process.env.FASTAPI_URL ||
   "http://127.0.0.1:8000";
+
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 const normalizeProviderKey = (value = "") =>
   String(value || "").trim().toLowerCase();
@@ -25,6 +30,15 @@ const getSafeString = (value = "") => String(value || "").trim();
 const getUniqueSeats = (seats = []) => {
   if (!Array.isArray(seats)) return [];
   return [...new Set(seats.map((seat) => String(seat).trim()).filter(Boolean))];
+};
+
+const parseSeatsFromMetadata = (value = "") => {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 };
 
 const releaseReservedSeats = async (routeId, seats = []) => {
@@ -45,14 +59,57 @@ const createBooking = async (req, res) => {
 
   try {
     const {
-      routeId,
-      seats,
-      travelDate,
+      routeId: bodyRouteId,
+      seats: bodySeats,
+      travelDate: bodyTravelDate,
+      sessionId,
       forceFraud, // dev test only
     } = req.body;
 
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized." });
+    }
+
+    let routeId = bodyRouteId;
+    let seats = bodySeats;
+    let travelDate = bodyTravelDate;
+    let stripePayment = null;
+
+    if (sessionId) {
+      const safeSessionId = getSafeString(sessionId);
+      const existingBooking = await Booking.findOne({ stripeSessionId: safeSessionId });
+
+      if (existingBooking) {
+        return res.status(200).json(existingBooking);
+      }
+
+      if (!stripe) {
+        return res.status(500).json({ message: "Stripe is not configured." });
+      }
+
+      const checkoutSession = await stripe.checkout.sessions.retrieve(safeSessionId);
+
+      if (!checkoutSession || checkoutSession.payment_status !== "paid") {
+        return res.status(400).json({ message: "Stripe payment is not completed." });
+      }
+
+      const metadata = checkoutSession.metadata || {};
+
+      if (metadata.userId && String(metadata.userId) !== String(req.user._id)) {
+        return res.status(403).json({ message: "Payment session does not belong to this user." });
+      }
+
+      routeId = metadata.routeId || routeId;
+      seats = parseSeatsFromMetadata(metadata.seats) || seats;
+      travelDate = metadata.travelDate || travelDate;
+
+      stripePayment = {
+        provider: "stripe",
+        status: "PAID",
+        sessionId: checkoutSession.id,
+        paymentIntentId: String(checkoutSession.payment_intent || ""),
+        deviceId: metadata.deviceId || "",
+      };
     }
 
     if (!routeId) {
@@ -68,7 +125,9 @@ const createBooking = async (req, res) => {
     }
 
     // Request fingerprint data
-    const deviceId = getSafeString(req.headers["x-device-id"] || "");
+    const deviceId = getSafeString(
+      req.headers["x-device-id"] || stripePayment?.deviceId || ""
+    );
     const userAgent = getSafeString(req.headers["user-agent"] || "");
     const forwardedFor = String(req.headers["x-forwarded-for"] || "");
     const ipAddress = getSafeString(
@@ -142,9 +201,19 @@ const createBooking = async (req, res) => {
       seatCount,
       unitPrice,
       totalAmount,
+      paymentProvider: stripePayment?.provider || "",
+      paymentStatus: stripePayment?.status || "",
+      stripeSessionId: stripePayment?.sessionId || "",
+      stripePaymentIntentId: stripePayment?.paymentIntentId || "",
       travelDate: bookingTravelDate,
-      status: "PENDING",
+      status: stripePayment ? "CONFIRMED" : "PENDING",
     });
+
+    if (stripePayment) {
+      reservedRoute = null;
+      reservedSeats = [];
+      return res.status(201).json(booking);
+    }
 
     // 4) DEV TEST HOOK (only in development)
     if (
