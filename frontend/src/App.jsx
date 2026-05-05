@@ -36,6 +36,8 @@ const App = () => {
       {/* Backward compatible auth route */}
       <Route path="/auth" element={<AuthPage initialMode="login" />} />
       <Route path="/provider/apply" element={<ProviderApply/>} />
+      <Route path="/payment-success" element={<PaymentSuccessPage />} />
+      <Route path="/payment-failed" element={<PaymentFailedPage />} />
 
       {/* Authenticated user routes */}
       <Route element={<ProtectedRoute />}>
@@ -49,8 +51,6 @@ const App = () => {
         <Route path="/seats" element={<BookingPage />} />
         <Route path="/seats/:routeId" element={<BookingPage />} />
         <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/payment-success" element={<PaymentSuccessPage />} />
-        <Route path="/payment-failed" element={<PaymentFailedPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />
