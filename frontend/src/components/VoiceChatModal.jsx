@@ -183,10 +183,81 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     return URL.createObjectURL(blob);
   };
 
+  const getRoutesPreview = (data) => {
+    if (Array.isArray(data?.routesPreview)) return data.routesPreview;
+    if (Array.isArray(data?.routes_preview)) return data.routes_preview;
+    if (Array.isArray(data?.routes)) return data.routes;
+    return [];
+  };
+
+  const getRouteId = (route) =>
+    route?._id || route?.id || route?.routeId || route?.route_id || "";
+
+  const RoutePreview = ({ routes }) => {
+    const visibleRoutes = Array.isArray(routes) ? routes.filter(Boolean) : [];
+    if (!visibleRoutes.length) return null;
+
+    return (
+      <div className="mt-3 space-y-2">
+        {visibleRoutes.map((route, index) => {
+          const routeId = getRouteId(route);
+          const option = route?.option || index + 1;
+          const operator =
+            route?.operator ||
+            route?.company ||
+            route?.providerName ||
+            route?.provider ||
+            "Bus";
+          const from = route?.fromCity || route?.from || "-";
+          const to = route?.toCity || route?.to || "-";
+          const departureTime =
+            route?.departureTime || route?.departure_time || route?.time || "-";
+          const price =
+            route?.price !== null && route?.price !== undefined
+              ? `PKR ${Number(route.price).toLocaleString()}`
+              : "Price N/A";
+          const seats =
+            route?.availableSeats !== null && route?.availableSeats !== undefined
+              ? `${route.availableSeats} seats`
+              : "Seats N/A";
+
+          return (
+            <div
+              key={routeId || `${operator}_${departureTime}_${index}`}
+              className="rounded-xl border border-cyan-400/20 bg-slate-950/70 p-3"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold text-cyan-200">
+                      Option {option}
+                    </span>
+                    <span className="truncate text-xs font-semibold text-white">
+                      {operator}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-300">
+                    {from} to {to}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {departureTime} | {seats}
+                  </p>
+                </div>
+
+                <div className="shrink-0 text-right text-xs font-bold text-cyan-100">
+                  {price}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const handleNextAction = (data) => {
     const nextAction = data?.nextAction;
     const routeId = data?.selectedRouteId;
-    const c = data?.criteria || {};
 
     if (nextAction === "OPEN_SEATS" && routeId) {
       onClose?.();
@@ -195,15 +266,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
     }
 
     if (nextAction === "OPEN_ROUTES" || nextAction === "SHOW_ROUTES") {
-      const qs = new URLSearchParams({
-        from: c.from || "",
-        to: c.to || "",
-        date: c.date || c.day || "",
-      }).toString();
-
-      onClose?.();
-      navigate(`/routes?${qs}`);
-      return true;
+      return false;
     }
 
     return false;
@@ -261,6 +324,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
         sender: "bot",
         type: "text",
         text: replyText,
+        routesPreview: getRoutesPreview(res.data),
       });
 
       if (res.data?.criteria) onCriteria?.(res.data.criteria);
@@ -398,6 +462,7 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
         type: "text",
         text: replyText,
         audioUrl: botAudioUrl,
+        routesPreview: getRoutesPreview(res.data),
       });
 
       if (res.data?.criteria) onCriteria?.(res.data.criteria);
@@ -484,6 +549,8 @@ const VoiceChatModal = ({ open, onClose, onCriteria }) => {
               />
             </div>
           )}
+
+          {m.sender === "bot" && <RoutePreview routes={m.routesPreview} />}
         </div>
       </div>
     );
