@@ -1,37 +1,77 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import HeroSlider from '../components/HeroSlider';
-import SearchForm from '../components/SearchForm';
-import FeatureCards from '../components/FeatureCards';
-import Footer from '../components/Footer';
+import React from "react";
+import { Bell, CalendarCheck, ShieldCheck } from "lucide-react";
+import Navbar from "../components/Navbar";
+import HeroSlider from "../components/HeroSlider";
+import SearchForm from "../components/SearchForm";
+import FeatureCards from "../components/FeatureCards";
+import Footer from "../components/Footer";
+
+const dashboardHighlights = [
+  {
+    title: "Trip reminders",
+    text: "Keep upcoming departures visible before you travel.",
+    icon: Bell,
+  },
+  {
+    title: "Seat-first booking",
+    text: "Pick seats clearly before moving to payment.",
+    icon: CalendarCheck,
+  },
+  {
+    title: "Clean confirmations",
+    text: "Every booking stays easy to review later.",
+    icon: ShieldCheck,
+  },
+];
 
 const Home = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
-      <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-6 pb-10">
-          <HeroSlider />
-          <SearchForm />
+      <main>
+        <HeroSlider />
+        <SearchForm />
+
+        <div className="mx-auto max-w-6xl px-4 pb-14">
           <FeatureCards />
 
-          <section className="mt-12 grid gap-6 md:grid-cols-2">
-            <div className="bg-slate-900/70 rounded-3xl border border-white/10 shadow-lg shadow-cyan-500/20 p-5 flex flex-col gap-2 text-white">
-              <h3 className="font-semibold text-lg">Why SafarBot?</h3>
-              <p className="text-sm text-slate-200 leading-relaxed">
-                SafarBot is built specifically for academic and portfolio projects. It shows a
-                full, realistic bus booking flow: role-based login, home page with hero slider,
-                route search, seat selection, booking creation with MongoDB and a dummy payment
-                success screen.
-              </p>
-            </div>
-            <div className="bg-slate-900/70 rounded-3xl border border-white/10 shadow-lg shadow-emerald-500/20 p-5 flex flex-col gap-2 text-white">
-              <h3 className="font-semibold text-lg">Operators Included</h3>
-              <p className="text-sm text-slate-200 leading-relaxed">
-                Dummy routes cover popular Pakistani bus services like Faisal Movers, Daewoo
-                Express, Bilal Travels and Skyways. You can extend the JSON on the backend to add
-                more cities and timings depending on your university requirements.
-              </p>
+          <section className="mt-14 overflow-hidden rounded-[2rem] bg-blue-700 text-white shadow-2xl shadow-blue-900/20">
+            <div className="grid gap-6 p-6 md:grid-cols-[0.95fr,1.05fr] md:p-10">
+              <div className="flex flex-col justify-center">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">
+                  SafarBot dashboard
+                </p>
+                <h2 className="mt-3 text-3xl font-extrabold tracking-tight md:text-4xl">
+                  Your bus travel, sorted.
+                </h2>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-blue-50 md:text-base">
+                  Plan the route, confirm the seats, and return anytime to see
+                  your booking history without digging through old screens.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                {dashboardHighlights.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      key={item.title}
+                      className="rounded-3xl border border-white/20 bg-white/12 p-4 backdrop-blur-xl"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-blue-700">
+                        <Icon size={19} />
+                      </div>
+                      <h3 className="mt-4 text-sm font-extrabold">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 text-xs leading-relaxed text-blue-50">
+                        {item.text}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
         </div>

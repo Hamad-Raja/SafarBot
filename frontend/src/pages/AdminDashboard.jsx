@@ -5,6 +5,16 @@ import Footer from "../components/Footer";
 import RouteInsightsModal from "../components/RouteInsightsModal";
 import { toast } from "react-hot-toast";
 import Api from '../api/api'
+
+const panelClass =
+  "rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl";
+
+const statClass =
+  "rounded-[1.5rem] border border-white/55 bg-white/55 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl";
+
+const insetPanelClass =
+  "rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-blue-900/5 backdrop-blur-xl";
+
 const AdminDashboard = () => {
   const [range, setRange] = useState("month");
 
@@ -49,10 +59,10 @@ const AdminDashboard = () => {
 
   const badge = (status) => {
     if (status === "confirmed")
-      return "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     if (status === "pending")
-      return "bg-amber-500/15 text-amber-300 border border-amber-400/30";
-    return "bg-red-500/15 text-red-300 border border-red-400/30";
+      return "bg-amber-50 text-amber-700 border border-amber-200";
+    return "bg-red-50 text-red-700 border border-red-200";
   };
 
   const fetchDashboardData = async () => {
@@ -170,37 +180,37 @@ const AdminDashboard = () => {
   }, [delayRoutes]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-white text-slate-950">
       <Navbar />
 
       <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-6 pb-10 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-6 pb-10">
           {/* Header */}
-          <div className="rounded-3xl bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-400 p-[1px] shadow-2xl shadow-cyan-500/30 mb-6">
-            <div className="rounded-[1.4rem] bg-slate-950/90 px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="mb-6 overflow-hidden rounded-[2rem] border border-white/55 bg-white/45 px-6 py-5 shadow-2xl shadow-blue-900/10 ring-1 ring-white/35 backdrop-blur-2xl">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-xl md:text-2xl font-extrabold mb-1">
                   Admin Dashboard
                 </h1>
-                <p className="text-xs text-slate-300 max-w-lg">
+                <p className="text-xs text-slate-600 max-w-lg">
                   Monitor system activity, bookings, revenue and operational signals.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 text-[11px] text-slate-200">
+                <span className="px-3 py-1 rounded-full border border-white/55 bg-white/60 text-[11px] text-slate-700 shadow-sm backdrop-blur-xl">
                   Role: ADMIN
                 </span>
 
-                <div className="flex rounded-full bg-slate-900/70 border border-white/10 p-1">
+                <div className="flex rounded-full border border-white/55 bg-white/60 p-1 shadow-sm backdrop-blur-xl">
                   {["today", "week", "month"].map((v) => (
                     <button
                       key={v}
                       type="button"
                       onClick={() => setRange(v)}
                       className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all ${range === v
-                          ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-md shadow-cyan-500/30"
-                          : "text-slate-300 hover:text-white"
+                          ? "bg-slate-950 text-white shadow-md shadow-slate-900/20"
+                          : "text-slate-600 hover:text-blue-700"
                         }`}
                     >
                       {v.toUpperCase()}
@@ -213,63 +223,63 @@ const AdminDashboard = () => {
 
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-6 mb-6">
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-cyan-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Bookings</p>
-              <p className="text-2xl font-extrabold">{stats.totalBookings}</p>
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Bookings</p>
+              <p className="text-2xl font-extrabold text-slate-950">{stats.totalBookings}</p>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-emerald-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Revenue</p>
-              <p className="text-2xl font-extrabold">
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Revenue</p>
+              <p className="text-2xl font-extrabold text-slate-950">
                 PKR {(stats.totalRevenue || 0).toLocaleString()}
               </p>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-sky-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Active Users</p>
-              <p className="text-2xl font-extrabold">{stats.activeUsers}</p>
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Active Users</p>
+              <p className="text-2xl font-extrabold text-slate-950">{stats.activeUsers}</p>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-cyan-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Success Rate</p>
-              <p className="text-2xl font-extrabold">{stats.successRate}%</p>
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Success Rate</p>
+              <p className="text-2xl font-extrabold text-slate-950">{stats.successRate}%</p>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-red-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Fraud Alerts</p>
-              <p className="text-2xl font-extrabold">{stats.fraudAlerts}</p>
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Fraud Alerts</p>
+              <p className="text-2xl font-extrabold text-slate-950">{stats.fraudAlerts}</p>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4 shadow-lg shadow-amber-500/10">
-              <p className="text-[11px] text-slate-400 mb-1">Pending Providers</p>
-              <p className="text-2xl font-extrabold">{stats.pendingProviders}</p>
+            <div className={statClass}>
+              <p className="text-[11px] text-slate-500 mb-1">Pending Providers</p>
+              <p className="text-2xl font-extrabold text-slate-950">{stats.pendingProviders}</p>
             </div>
           </div>
 
           {/* Grid */}
           <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
             {/* Top routes */}
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-cyan-500/10 text-xs">
+            <div className={`${panelClass} text-xs`}>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold text-sm">Top Routes</h2>
-                <span className="text-[11px] text-slate-400">Performance share</span>
+                <span className="text-[11px] text-slate-500">Performance share</span>
               </div>
 
               <div className="space-y-3">
                 {topRoutes.length === 0 ? (
-                  <p className="text-[11px] text-slate-400">No route data available.</p>
+                  <p className="text-[11px] text-slate-500">No route data available.</p>
                 ) : (
                   topRoutes.map((r) => (
                     <div key={r.route}>
                       <div className="flex justify-between mb-1">
-                        <span className="text-slate-200">{r.route}</span>
-                        <span className="text-cyan-300 font-semibold">
+                        <span className="text-slate-800">{r.route}</span>
+                        <span className="text-blue-700 font-semibold">
                           PKR {(r.revenue || 0).toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+                          className="h-full bg-blue-700"
                           style={{
                             width: `${stats.totalBookings > 0
                                 ? Math.min(100, (r.bookings / stats.totalBookings) * 100)
@@ -278,7 +288,7 @@ const AdminDashboard = () => {
                           }}
                         />
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                      <div className="flex justify-between text-[10px] text-slate-500 mt-1">
                         <span>{r.bookings} bookings</span>
                         <span>
                           Share:{" "}
@@ -297,30 +307,30 @@ const AdminDashboard = () => {
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold">Recent Bookings</h3>
-                  <span className="text-[11px] text-slate-400">Latest activity</span>
+                  <span className="text-[11px] text-slate-500">Latest activity</span>
                 </div>
 
                 <div className="space-y-2">
                   {recentBookings.length === 0 ? (
-                    <p className="text-[11px] text-slate-400">No recent bookings found.</p>
+                    <p className="text-[11px] text-slate-500">No recent bookings found.</p>
                   ) : (
                     recentBookings.map((b) => (
                       <div
                         key={b.id}
-                        className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex items-center justify-between gap-3"
+                        className={`${insetPanelClass} px-3 py-2 flex items-center justify-between gap-3`}
                       >
                         <div>
-                          <p className="text-slate-200 text-[11px] font-semibold">
+                          <p className="text-slate-800 text-[11px] font-semibold">
                             {b.route}
                           </p>
-                          <p className="text-[10px] text-slate-400">
+                          <p className="text-[10px] text-slate-500">
                             {b.operator} • Seats: {b.seats || "N/A"} •{" "}
                             {b.time ? new Date(b.time).toLocaleString() : "N/A"}
                           </p>
                         </div>
 
                         <div className="text-right">
-                          <p className="text-cyan-300 text-[11px] font-semibold">
+                          <p className="text-blue-700 text-[11px] font-semibold">
                             PKR {(b.amount || 0).toLocaleString()}
                           </p>
                           <span
@@ -341,21 +351,21 @@ const AdminDashboard = () => {
             {/* Right column */}
             <div className="space-y-6">
               {/* Delay monitoring */}
-              <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-amber-500/10 text-xs">
+              <div className={`${panelClass} text-xs`}>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-sm">Delay Monitoring</h2>
                   <button
                     type="button"
                     onClick={fetchDelayRoutes}
                     disabled={delayLoading}
-                    className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
+                    className="px-3 py-1 rounded-full text-[10px] font-semibold border border-blue-200 bg-white/60 text-blue-700 hover:bg-blue-50 disabled:opacity-50"
                   >
                     {delayLoading ? "Refreshing..." : "Refresh"}
                   </button>
                 </div>
 
                 {delayPreviewRoutes.length === 0 ? (
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     No routes available for delay monitoring.
                   </p>
                 ) : (
@@ -367,15 +377,15 @@ const AdminDashboard = () => {
                       return (
                         <div
                           key={r._id}
-                          className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-3"
+                          className={`${insetPanelClass} px-3 py-3`}
                         >
                           <div className="flex flex-col gap-3">
                             <div className="flex items-start justify-between gap-3">
                               <div>
-                                <p className="text-slate-100 font-semibold text-[12px]">
+                                <p className="text-slate-900 font-semibold text-[12px]">
                                   {r.fromCity} → {r.toCity}
                                 </p>
-                                <p className="text-[10px] text-slate-400 mt-1">
+                                <p className="text-[10px] text-slate-500 mt-1">
                                   {r.operator || "Unknown Operator"} •{" "}
                                   {r.departureTime || "N/A"}
                                   {r.travelDate ? ` • ${r.travelDate}` : ""}
@@ -387,8 +397,8 @@ const AdminDashboard = () => {
 
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[10px] border ${r.active
-                                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
-                                    : "bg-slate-800 text-slate-300 border-slate-600/60"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    : "bg-slate-100 text-slate-600 border-slate-200"
                                   }`}
                               >
                                 {r.active ? "Active" : "Paused"}
@@ -400,7 +410,7 @@ const AdminDashboard = () => {
                                 type="button"
                                 onClick={() => handleCheckInsights(r)}
                                 disabled={insightsLoading}
-                                className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
+                                className="px-3 py-1 rounded-full text-[10px] font-semibold border border-blue-200 bg-white/60 text-blue-700 hover:bg-blue-50 disabled:opacity-50"
                               >
                                 {insightsLoading
                                   ? "Loading..."
@@ -418,30 +428,30 @@ const AdminDashboard = () => {
               </div>
 
               {/* Recent users */}
-              <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-emerald-500/10 text-xs">
+              <div className={`${panelClass} text-xs`}>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-sm">Recent Users</h2>
-                  <span className="text-[11px] text-slate-400">Latest</span>
+                  <span className="text-[11px] text-slate-500">Latest</span>
                 </div>
 
                 <div className="space-y-3">
                   {recentUsers.length === 0 ? (
-                    <p className="text-[11px] text-slate-400">No recent users found.</p>
+                    <p className="text-[11px] text-slate-500">No recent users found.</p>
                   ) : (
                     recentUsers.map((u) => (
                       <div
                         key={u.email}
-                        className="flex items-center justify-between bg-slate-950/60 rounded-2xl px-3 py-2 border border-white/10"
+                        className={`${insetPanelClass} flex items-center justify-between px-3 py-2`}
                       >
                         <div>
-                          <p className="text-slate-200">{u.name}</p>
-                          <p className="text-[10px] text-slate-400">{u.email}</p>
+                          <p className="text-slate-800">{u.name}</p>
+                          <p className="text-[10px] text-slate-500">{u.email}</p>
                         </div>
 
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide ${u.role === "provider"
-                              ? "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30"
-                              : "bg-cyan-500/15 text-cyan-300 border border-cyan-400/30"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-blue-50 text-blue-700 border border-blue-200"
                             }`}
                         >
                           {u.role}
@@ -453,21 +463,21 @@ const AdminDashboard = () => {
               </div>
 
               {/* System status */}
-              <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-cyan-500/10 text-xs">
+              <div className={`${panelClass} text-xs`}>
                 <h2 className="font-semibold text-sm mb-3">System Status</h2>
 
                 <div className="grid gap-2">
-                  <div className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex justify-between">
-                    <span className="text-slate-400">API</span>
-                    <span className="text-emerald-300 font-semibold">Operational</span>
+                  <div className={`${insetPanelClass} px-3 py-2 flex justify-between`}>
+                    <span className="text-slate-500">API</span>
+                    <span className="text-emerald-700 font-semibold">Operational</span>
                   </div>
-                  <div className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex justify-between">
-                    <span className="text-slate-400">Payments</span>
-                    <span className="text-cyan-300 font-semibold">Sandbox</span>
+                  <div className={`${insetPanelClass} px-3 py-2 flex justify-between`}>
+                    <span className="text-slate-500">Payments</span>
+                    <span className="text-blue-700 font-semibold">Sandbox</span>
                   </div>
-                  <div className="rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 flex justify-between">
-                    <span className="text-slate-400">Monitoring</span>
-                    <span className="text-amber-300 font-semibold">
+                  <div className={`${insetPanelClass} px-3 py-2 flex justify-between`}>
+                    <span className="text-slate-500">Monitoring</span>
+                    <span className="text-amber-700 font-semibold">
                       {stats.fraudAlerts} Alerts
                     </span>
                   </div>
@@ -475,20 +485,20 @@ const AdminDashboard = () => {
               </div>
 
               {/* Actions */}
-              <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-sky-500/10 text-xs">
+              <div className={`${panelClass} text-xs`}>
                 <h2 className="font-semibold text-sm mb-3">Quick Actions</h2>
                 <div className="grid gap-2">
                   <button
                     type="button"
                     onClick={() => toast.success("Export report feature not connected yet")}
-                    className="w-full px-4 py-2 rounded-2xl bg-slate-950/60 border border-white/10 text-slate-200 hover:bg-slate-950 transition-colors"
+                    className="w-full px-4 py-2 rounded-2xl border border-white/60 bg-white/65 text-slate-700 shadow-sm transition-colors hover:bg-white"
                   >
                     Export Summary
                   </button>
                   <button
                     type="button"
                     onClick={() => toast.success("Open providers page to review pending providers")}
-                    className="w-full px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-semibold"
+                    className="w-full px-4 py-2 rounded-2xl bg-slate-950 text-white font-semibold shadow-lg shadow-slate-900/15 transition-colors hover:bg-blue-800"
                   >
                     Review Pending Providers
                   </button>

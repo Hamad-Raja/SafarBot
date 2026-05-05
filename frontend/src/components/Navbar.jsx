@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.jpeg";
 
@@ -13,7 +14,6 @@ const Navbar = () => {
 
   const role = user?.role || "guest";
 
-  // close dropdowns on route change (professional UX)
   useEffect(() => {
     setOpenProfile(false);
     setOpenMobile(false);
@@ -26,7 +26,7 @@ const Navbar = () => {
 
   const navLinkClass = ({ isActive }) =>
     `text-sm font-semibold transition-colors ${
-      isActive ? "text-cyan-600" : "text-slate-600 hover:text-cyan-600"
+      isActive ? "text-blue-700" : "text-slate-700 hover:text-blue-700"
     }`;
 
   const guestLinks = useMemo(
@@ -41,6 +41,7 @@ const Navbar = () => {
   const userLinks = useMemo(
     () => [
       { to: "/home", label: "Home" },
+      { to: "/my-bookings", label: "My Bookings" },
       { to: "/about", label: "About" },
       { to: "/contact", label: "Contact" },
     ],
@@ -75,31 +76,38 @@ const Navbar = () => {
       ? userLinks
       : guestLinks;
 
+  const brandTarget =
+    role === "admin"
+      ? "/admin/dashboard"
+      : role === "provider"
+      ? "/provider/dashboard"
+      : role === "user"
+      ? "/home"
+      : "/";
+
   return (
-    <nav className="w-full bg-white/90 backdrop-blur border-b border-slate-100 sticky top-0 z-30">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/40">
+    <nav className="sticky top-0 z-40 w-full px-4 pt-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-white/45 bg-white/25 px-4 py-2.5 shadow-xl shadow-slate-900/10 ring-1 ring-white/20 backdrop-blur-2xl">
+        <Link to={brandTarget} className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-blue-900/10 ring-1 ring-slate-200">
             <img
               src={logo}
               alt="SafarBot Logo"
-              className="h-8 w-8 object-contain rounded-xl"
+              className="h-8 w-8 rounded-full object-contain"
             />
           </div>
 
           <div className="flex flex-col leading-tight">
-            <span className="font-bold text-lg tracking-tight text-slate-900">
+            <span className="text-lg font-extrabold tracking-tight text-slate-950">
               SafarBot
             </span>
-            {/* <span className="text-xs text-slate-500 -mt-1">
-              Voice &amp; Text Booking
-            </span> */}
+            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-700 sm:block">
+              Travel Desk
+            </span>
           </div>
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden items-center gap-6 md:flex">
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} className={navLinkClass}>
               {l.label}
@@ -107,29 +115,27 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-3">
-          {/* Mobile menu button */}
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setOpenMobile((v) => !v)}
-            className="md:hidden h-10 w-10 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/70 text-slate-800 transition-colors hover:bg-white md:hidden"
             aria-label="Toggle menu"
           >
-            {openMobile ? "✕" : "☰"}
+            {openMobile ? <X size={18} /> : <Menu size={18} />}
           </button>
 
           {!user && (
             <>
               <button
                 onClick={() => navigate("/auth?mode=login")}
-                className="hidden sm:inline-flex px-4 py-2 rounded-full border border-cyan-500/40 text-cyan-700 font-semibold text-sm hover:bg-cyan-50 transition-colors"
+                className="hidden rounded-full border border-blue-200 bg-white/70 px-4 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50 sm:inline-flex"
               >
                 Sign In
               </button>
               <button
                 onClick={() => navigate("/auth?mode=register")}
-                className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-white font-semibold text-sm shadow-md hover:shadow-cyan-500/30 transition-shadow"
+                className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-colors hover:bg-blue-800"
               >
                 Get Started
               </button>
@@ -141,37 +147,37 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={() => setOpenProfile((v) => !v)}
-                className="px-3 py-2 rounded-full bg-slate-900 text-white text-sm font-semibold flex items-center gap-2 border border-slate-200/40"
+                className="flex items-center gap-2 rounded-full bg-slate-950 px-2.5 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-colors hover:bg-blue-800"
               >
-                <span className="h-6 w-6 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-white flex items-center justify-center text-xs">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-xs font-extrabold text-blue-700">
                   {user.name?.charAt(0)?.toUpperCase() || "U"}
                 </span>
-                <span className="hidden sm:inline">
+                <span className="hidden max-w-28 truncate sm:inline">
                   {user.name || "Profile"}
                 </span>
               </button>
 
               {openProfile && (
-                <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-white shadow-lg shadow-slate-400/20 border border-slate-100 text-xs py-2 z-40 overflow-hidden">
+                <div className="absolute right-0 z-50 mt-3 w-48 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 text-sm shadow-2xl shadow-slate-900/15">
                   <button
                     type="button"
                     onClick={() => navigate("/profile")}
-                    className="block w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="block w-full rounded-2xl px-3 py-2 text-left text-slate-700 transition-colors hover:bg-slate-50"
                   >
                     Profile Settings
                   </button>
                   <button
                     type="button"
                     onClick={() => navigate("/my-bookings")}
-                    className="block w-full text-left px-3 py-2 hover:bg-slate-50"
+                    className="block w-full rounded-2xl px-3 py-2 text-left text-slate-700 transition-colors hover:bg-slate-50"
                   >
                     My Bookings
                   </button>
-                  <div className="h-px bg-slate-100 my-1" />
+                  <div className="my-1 h-px bg-slate-100" />
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                    className="block w-full rounded-2xl px-3 py-2 text-left text-red-600 transition-colors hover:bg-red-50"
                   >
                     Sign Out
                   </button>
@@ -183,7 +189,7 @@ const Navbar = () => {
           {user && (role === "provider" || role === "admin") && (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded-full bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 transition-colors"
+              className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
             >
               Sign Out
             </button>
@@ -191,18 +197,17 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile dropdown panel */}
       {openMobile && (
-        <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2">
+        <div className="mx-auto mt-3 max-w-6xl rounded-3xl border border-white/45 bg-white/35 p-3 shadow-xl shadow-slate-900/10 ring-1 ring-white/20 backdrop-blur-2xl md:hidden">
+          <div className="flex flex-col gap-1">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-2xl text-sm font-semibold transition-colors ${
+                  `rounded-2xl px-3 py-2 text-sm font-semibold transition-colors ${
                     isActive
-                      ? "bg-cyan-50 text-cyan-700"
+                      ? "bg-blue-50 text-blue-700"
                       : "text-slate-700 hover:bg-slate-50"
                   }`
                 }
@@ -212,16 +217,16 @@ const Navbar = () => {
             ))}
 
             {!user && (
-              <div className="pt-2 flex gap-2">
+              <div className="mt-2 grid grid-cols-2 gap-2">
                 <button
                   onClick={() => navigate("/auth?mode=login")}
-                  className="flex-1 px-4 py-2 rounded-2xl border border-cyan-500/40 text-cyan-700 font-semibold text-sm hover:bg-cyan-50 transition-colors"
+                  className="rounded-2xl border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => navigate("/auth?mode=register")}
-                  className="flex-1 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-emerald-400 text-white font-semibold text-sm"
+                  className="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white"
                 >
                   Get Started
                 </button>
@@ -231,7 +236,7 @@ const Navbar = () => {
             {user && (
               <button
                 onClick={handleLogout}
-                className="mt-2 px-4 py-2 rounded-2xl bg-slate-900 text-white font-semibold text-sm"
+                className="mt-2 rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white"
               >
                 Sign Out
               </button>

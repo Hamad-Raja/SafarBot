@@ -1,136 +1,127 @@
 import React from "react";
+import { Mic2, Route, ShieldCheck, TicketCheck } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const highlights = [
+  {
+    title: "Voice and text search",
+    icon: Mic2,
+  },
+  {
+    title: "Clear seat selection",
+    icon: TicketCheck,
+  },
+  {
+    title: "Trip history",
+    icon: Route,
+  },
+  {
+    title: "Protected access",
+    icon: ShieldCheck,
+  },
+];
+
+const steps = [
+  { title: "Search", desc: "Find routes using voice or text." },
+  { title: "Select", desc: "Choose schedule and seat." },
+  { title: "Review", desc: "Confirm details in a summary." },
+  { title: "Book", desc: "Complete booking and save history." },
+];
+
 const AboutPage = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
 
-      <main className="flex-1">
-        <div className="max-w-5xl mx-auto px-4 pt-10 pb-14 text-white">
-          {/* Header */}
-          <div className="mb-8">
-            <p className="inline-flex items-center gap-2 text-[11px] font-semibold text-cyan-300 uppercase tracking-[0.2em]">
-              <span className="h-px w-6 bg-cyan-400" />
-              About
-            </p>
+      <main className="mx-auto max-w-5xl px-4 pb-14 pt-10">
+        <section className="mb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
+            About
+          </p>
 
-            <h1 className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight">
-              About <span className="text-cyan-300">SafarBot</span>
-            </h1>
+          <h1 className="mt-2 text-4xl font-extrabold tracking-tight">
+            About SafarBot
+          </h1>
 
-            <p className="mt-3 text-sm md:text-base text-slate-300 leading-relaxed max-w-3xl">
-              SafarBot is a modern bus booking platform built to simplify intercity
-              travel. It focuses on a clean user experience, fast route discovery,
-              and a consistent booking flow — powered by voice and text input.
-            </p>
-          </div>
+          <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-slate-600">
+            SafarBot is a modern bus booking platform built for fast route
+            discovery, clear seat selection, and a consistent travel dashboard.
+          </p>
+        </section>
 
-          {/* Main content card */}
-          <div className="bg-slate-900/70 rounded-3xl border border-white/10 shadow-xl shadow-cyan-500/20 p-6 md:p-8">
-            <div className="grid gap-8 md:grid-cols-3">
-              {/* What it is */}
-              <div className="md:col-span-2 space-y-4 text-sm text-slate-200 leading-relaxed">
-                <h2 className="text-lg font-semibold text-white">
-                  What SafarBot delivers
-                </h2>
-
-                <p>
-                  SafarBot provides a structured booking journey that feels familiar to
-                  real-world travel platforms. Users can search routes, review available
-                  schedules, select seats, and confirm a booking with a clear trip summary.
-                </p>
-
-                <p>
-                  The platform is designed with clarity and reliability in mind — responsive
-                  layouts, consistent screens, and an interface that supports quick actions,
-                  even on smaller devices.
-                </p>
-
-                <p>
-                  SafarBot also supports role-based access so different users can experience
-                  the product from different perspectives (passengers and operators), while
-                  keeping the interface clean and professional.
-                </p>
-              </div>
-
-              {/* Key highlights */}
-              <div className="rounded-3xl bg-slate-950/60 border border-white/10 p-5">
-                <h3 className="text-sm font-semibold text-white mb-4">
-                  Key highlights
-                </h3>
-
-                <ul className="space-y-3 text-sm text-slate-300">
-                  <li className="flex gap-3">
-                    <span className="h-7 w-7 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      🎙️
-                    </span>
-                    <span>Voice &amp; text route search</span>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="h-7 w-7 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      💺
-                    </span>
-                    <span>Seat selection with a clear layout</span>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="h-7 w-7 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      🧾
-                    </span>
-                    <span>Trip summary &amp; booking history</span>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="h-7 w-7 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      🛡️
-                    </span>
-                    <span>Secure authentication &amp; protected access</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* How it works */}
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <h2 className="text-lg font-semibold text-white mb-4">
-                How the booking flow works
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5 md:p-8">
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="space-y-4 text-sm font-medium leading-relaxed text-slate-600 md:col-span-2">
+              <h2 className="text-xl font-extrabold text-slate-950">
+                What SafarBot delivers
               </h2>
 
-              <div className="grid gap-4 md:grid-cols-4">
-                {[
-                  { title: "Search", desc: "Find routes using voice or text." },
-                  { title: "Select", desc: "Choose schedule and seat." },
-                  { title: "Review", desc: "Confirm details in a summary." },
-                  { title: "Book", desc: "Complete booking and save history." },
-                ].map((step) => (
-                  <div
-                    key={step.title}
-                    className="rounded-3xl bg-slate-950/60 border border-white/10 p-4"
-                  >
-                    <p className="text-sm font-semibold text-white">
-                      {step.title}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+              <p>
+                The app guides passengers through a structured booking journey:
+                search a route, review available schedules, choose seats, and
+                complete checkout with a clear trip summary.
+              </p>
 
-            {/* Closing line */}
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <p className="text-sm text-slate-300 leading-relaxed">
-                SafarBot is built with a focus on a strong interface, realistic user journeys,
-                and a product-first design approach — ideal for showcasing a complete travel
-                booking experience.
+              <p>
+                It is designed to feel calm and practical on both mobile and
+                desktop, with booking details kept readable instead of buried in
+                heavy screens.
+              </p>
+
+              <p>
+                Role-based access lets passengers and operators work from the
+                same product while keeping each workflow focused.
               </p>
             </div>
+
+            <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
+              <h3 className="text-sm font-extrabold text-slate-950">
+                Key highlights
+              </h3>
+
+              <ul className="mt-4 space-y-3">
+                {highlights.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <li
+                      key={item.title}
+                      className="flex items-center gap-3 text-sm font-semibold text-slate-700"
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                        <Icon size={18} />
+                      </span>
+                      <span>{item.title}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
-        </div>
+
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <h2 className="mb-4 text-xl font-extrabold text-slate-950">
+              How the booking flow works
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-4">
+              {steps.map((step) => (
+                <div
+                  key={step.title}
+                  className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4"
+                >
+                  <p className="text-sm font-extrabold text-slate-950">
+                    {step.title}
+                  </p>
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500">
+                    {step.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
