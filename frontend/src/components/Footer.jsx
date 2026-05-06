@@ -4,56 +4,46 @@ import logo from "../assets/logo.jpeg";
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-950 border-t border-white/10 text-slate-400">
-      <div className="max-w-6xl mx-auto px-4 py-12 grid gap-10 md:grid-cols-4">
-        {/* Brand */}
-        {/* Brand */}
+    <footer className="border-t border-slate-200 bg-white text-slate-600">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/50">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-blue-900/10 ring-1 ring-slate-200">
               <img
                 src={logo}
                 alt="SafarBot Logo"
-                className="h-8 w-8 object-contain rounded-xl"
+                className="h-8 w-8 rounded-full object-contain"
               />
             </div>
 
-            <h3 className="text-white text-lg font-semibold tracking-tight">
+            <h3 className="text-lg font-extrabold tracking-tight text-slate-950">
               SafarBot
             </h3>
           </div>
 
-          <p className="mt-3 text-sm leading-relaxed max-w-md">
-            SafarBot is a smart bus booking platform designed to simplify
-            intercity travel through voice and text-based search, clear seat
-            selection, and reliable booking flows.
+          <p className="mt-3 max-w-md text-sm font-medium leading-relaxed">
+            A clean bus booking dashboard for route search, seat selection, and
+            trip management.
           </p>
         </div>
 
-        {/* Quick Links */}
         <div>
-          <h4 className="text-white text-sm font-semibold mb-3">Platform</h4>
-          <ul className="space-y-2 text-sm">
+          <h4 className="mb-3 text-sm font-extrabold text-slate-950">Platform</h4>
+          <ul className="space-y-2 text-sm font-medium">
             <li>
-              <Link
-                to="/about"
-                className="hover:text-cyan-300 transition-colors"
-              >
+              <Link to="/about" className="transition-colors hover:text-blue-700">
                 About SafarBot
               </Link>
             </li>
             <li>
-              <Link
-                to="/auth"
-                className="hover:text-cyan-300 transition-colors"
-              >
+              <Link to="/auth" className="transition-colors hover:text-blue-700">
                 Sign In / Register
               </Link>
             </li>
             <li>
               <Link
                 to="/contact"
-                className="hover:text-cyan-300 transition-colors"
+                className="transition-colors hover:text-blue-700"
               >
                 Contact Support
               </Link>
@@ -61,47 +51,43 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Support */}
         <div>
-          <h4 className="text-white text-sm font-semibold mb-3">Support</h4>
-          <ul className="space-y-2 text-sm">
+          <h4 className="mb-3 text-sm font-extrabold text-slate-950">Support</h4>
+          <ul className="space-y-2 text-sm font-medium">
             <li>
-              Email:{" "}
               <a
                 href="mailto:support@safarbot.com"
-                className="hover:text-cyan-300 transition-colors"
+                className="transition-colors hover:text-blue-700"
               >
                 support@safarbot.com
               </a>
             </li>
             <li>
-              Phone:{" "}
               <a
-                href="+92 309 0000000"
-                className="hover:text-cyan-300 transition-colors"
+                href="tel:+923090000000"
+                className="transition-colors hover:text-blue-700"
               >
                 +92 309 0000000
               </a>
             </li>
-            <li className="text-slate-500">24/7 Customer Support</li>
+            <li className="text-slate-500">24/7 customer support</li>
           </ul>
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <div className="border-t border-slate-200">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs font-medium text-slate-500 sm:flex-row">
           <span>
-            © {new Date().getFullYear()} SafarBot. All rights reserved.
+            Copyright {new Date().getFullYear()} SafarBot. All rights reserved.
           </span>
 
           <div className="flex gap-4">
-            <Link to="/terms" className="hover:text-cyan-300 transition-colors">
+            <Link to="/terms" className="transition-colors hover:text-blue-700">
               Terms
             </Link>
             <Link
               to="/privacy"
-              className="hover:text-cyan-300 transition-colors"
+              className="transition-colors hover:text-blue-700"
             >
               Privacy
             </Link>

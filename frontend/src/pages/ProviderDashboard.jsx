@@ -63,17 +63,17 @@ const ProviderDashboard = () => {
   }, [routes]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-white text-slate-950">
       <Navbar />
       <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-6 pb-10 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-6 pb-10">
           {/* Header */}
-          <div className="rounded-3xl bg-gradient-to-r from-emerald-500 to-cyan-500 p-[1px] shadow-xl mb-6">
-            <div className="rounded-[1.4rem] bg-slate-950/90 px-6 py-5">
+          <div className="mb-6 overflow-hidden rounded-[2rem] border border-white/55 bg-white/45 px-6 py-5 shadow-2xl shadow-blue-900/10 ring-1 ring-white/35 backdrop-blur-2xl">
+            <div>
               <h1 className="text-2xl font-extrabold mb-1">
                 Provider Dashboard
               </h1>
-              <p className="text-xs text-slate-300 max-w-lg">
+              <p className="text-xs text-slate-600 max-w-lg">
                 Monitor routes, seat availability and daily operational performance.
               </p>
             </div>
@@ -91,14 +91,14 @@ const ProviderDashboard = () => {
           </div>
 
           {/* Upcoming departures */}
-          <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
+          <div className="rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
             <h2 className="text-sm font-semibold mb-3">
               Upcoming Departures
             </h2>
 
             <div className="space-y-3 text-xs">
               {upcomingDepartures.length === 0 ? (
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   No upcoming departures found.
                 </p>
               ) : (
@@ -121,19 +121,19 @@ const ProviderDashboard = () => {
 };
 
 const StatCard = ({ label, value }) => (
-  <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-4">
-    <p className="text-[11px] text-slate-400 mb-1">{label}</p>
-    <p className="text-2xl font-extrabold">{value}</p>
+  <div className="rounded-[1.5rem] border border-white/55 bg-white/55 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+    <p className="text-[11px] text-slate-500 mb-1">{label}</p>
+    <p className="text-2xl font-extrabold text-slate-950">{value}</p>
   </div>
 );
 
 const Departure = ({ route, time, seats }) => (
-  <div className="flex justify-between bg-slate-950/60 border border-white/10 rounded-2xl px-4 py-3">
+  <div className="flex justify-between rounded-2xl border border-white/60 bg-white/60 px-4 py-3 shadow-sm shadow-blue-900/5 backdrop-blur-xl">
     <div>
-      <p className="text-slate-200 font-semibold">{route}</p>
-      <p className="text-[11px] text-slate-400">Departure: {time}</p>
+      <p className="text-slate-900 font-semibold">{route}</p>
+      <p className="text-[11px] text-slate-500">Departure: {time}</p>
     </div>
-    <span className="text-cyan-300 font-semibold text-[11px]">{seats}</span>
+    <span className="text-blue-700 font-semibold text-[11px]">{seats}</span>
   </div>
 );
 

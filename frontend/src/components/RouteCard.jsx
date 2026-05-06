@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowRight, Clock3, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const RouteCard = ({ route }) => {
@@ -17,48 +18,55 @@ const RouteCard = ({ route }) => {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div className="flex-1 flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 text-[10px] rounded-full bg-primary/10 text-primary-dark font-semibold uppercase tracking-wide">
-            {operatorLabel}
-          </span>
-          <span className="text-xs text-amber-500 font-medium">
-            ★ {ratingLabel}
-          </span>
+    <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-900/10">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-blue-700">
+              {operatorLabel}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-[10px] font-extrabold text-amber-600">
+              <Star size={12} fill="currentColor" />
+              {ratingLabel}
+            </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-lg font-extrabold text-slate-950">
+            <span>{fromLabel}</span>
+            <ArrowRight size={18} className="text-blue-700" />
+            <span>{toLabel}</span>
+          </div>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
+            <span className="inline-flex items-center gap-1">
+              <Clock3 size={14} className="text-blue-700" />
+              {route?.departureTime || "-"} to {route?.arrivalTime || "-"}
+            </span>
+            <span>|</span>
+            <span>{route?.duration || "-"}</span>
+            <span>|</span>
+            <span>{route?.busType || "-"}</span>
+          </div>
         </div>
 
-        <p className="font-semibold text-slate-800 text-sm md:text-base">
-          {fromLabel} → {toLabel}
-        </p>
+        <div className="flex items-end justify-between gap-4 md:min-w-52 md:flex-col md:items-end">
+          <div className="md:text-right">
+            <p className="text-xs font-semibold text-slate-500">Starting from</p>
+            <p className="text-2xl font-extrabold text-slate-950">
+              PKR {priceValue.toLocaleString()}
+            </p>
+          </div>
 
-        <p className="text-xs text-slate-500">
-          {route?.departureTime || "-"} • {route?.arrivalTime || "-"} •{" "}
-          {route?.duration || "-"}
-        </p>
-
-        <p className="text-xs text-slate-400">
-          Bus type: {route?.busType || "-"}
-        </p>
-      </div>
-
-      <div className="flex items-end md:items-center justify-between md:flex-col gap-3 mt-3 md:mt-0">
-        <div className="text-right md:text-center">
-          <p className="text-[11px] text-slate-400">Starting from</p>
-          <p className="text-lg font-bold text-slate-800">
-            PKR {priceValue.toLocaleString()}
-          </p>
+          <button
+            onClick={handleBook}
+            disabled={!routeId}
+            className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            View Seats
+          </button>
         </div>
-
-        <button
-          onClick={handleBook}
-          disabled={!routeId}
-          className="px-5 py-2 rounded-2xl bg-primary-dark text-white text-sm font-semibold hover:bg-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          View Seats
-        </button>
       </div>
-    </div>
+    </article>
   );
 };
 

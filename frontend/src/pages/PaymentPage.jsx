@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Api from '../api/api';
+import { CreditCard, ShieldCheck } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+import Api from "../api/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -18,7 +19,6 @@ const getDeviceId = () => {
 
 const PaymentPage = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
 
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -81,60 +81,93 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
 
-      <main className="flex-1">
-        <div className="max-w-lg mx-auto mt-10 mb-12 bg-slate-900/80 rounded-3xl shadow-lg shadow-cyan-500/30 border border-white/10 px-6 py-6 md:px-8 md:py-8 text-white">
-          <h2 className="text-xl font-bold mb-2">Payment</h2>
+      <main className="mx-auto max-w-lg px-4 pb-12 pt-10">
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5 md:p-8">
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+              <CreditCard size={22} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight">
+                Payment
+              </h1>
+              <p className="mt-1 text-sm font-medium text-slate-600">
+                Confirm your fare before secure checkout.
+              </p>
+            </div>
+          </div>
 
           {!route ? (
-            <p className="text-sm text-slate-300">
-              No booking data found. Start from Home page.
-            </p>
+            <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-5">
+              <p className="text-sm font-bold text-slate-800">
+                No booking data found.
+              </p>
+              <p className="mt-1 text-xs font-medium text-slate-500">
+                Start from the home page and select a route again.
+              </p>
+            </div>
           ) : (
             <>
-              <p className="text-xs text-slate-400 mb-4">
-                {operatorLabel} • {fromLabel} → {toLabel} • {departureLabel}
-              </p>
+              <div className="mt-6 rounded-3xl border border-slate-100 bg-slate-50 p-4">
+                <p className="text-sm font-extrabold text-slate-950">
+                  {fromLabel} to {toLabel}
+                </p>
+                <p className="mt-1 text-xs font-semibold text-slate-500">
+                  {operatorLabel} | Departure: {departureLabel}
+                </p>
+              </div>
 
-              <div className="space-y-2 text-sm text-slate-100">
+              <div className="mt-5 space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
-                  <span className="text-slate-400">Seats</span>
-                  <span className="text-right">
+                  <span className="font-medium text-slate-500">Seats</span>
+                  <span className="text-right font-bold text-slate-900">
                     {seats.map((s) => s?.label).filter(Boolean).join(", ")}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Fare</span>
-                  <span>PKR {total.toLocaleString()}</span>
+                  <span className="font-medium text-slate-500">Fare</span>
+                  <span className="font-bold text-slate-900">
+                    PKR {total.toLocaleString()}
+                  </span>
                 </div>
 
-                <div className="flex justify-between text-xs text-slate-400">
-                  <span>Payment method</span>
-                  <span>Stripe card checkout</span>
+                <div className="flex justify-between text-xs">
+                  <span className="font-medium text-slate-500">
+                    Payment method
+                  </span>
+                  <span className="font-bold text-slate-700">
+                    Stripe card checkout
+                  </span>
                 </div>
               </div>
 
-              <div className="border-t border-dashed border-white/10 my-4" />
+              <div className="my-5 border-t border-dashed border-slate-200" />
+
+              <div className="mb-4 flex items-center gap-2 rounded-2xl bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700">
+                <ShieldCheck size={16} />
+                Secure checkout will open after confirmation.
+              </div>
 
               {success ? (
-                <div className="text-center text-xs text-emerald-300">
+                <div className="text-center text-sm font-bold text-emerald-700">
                   Redirecting to secure checkout...
                 </div>
               ) : (
                 <button
                   onClick={handlePay}
                   disabled={processing}
-                  className="w-full bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-semibold rounded-2xl py-2.5 mt-2 shadow-lg shadow-emerald-500/40 hover:shadow-emerald-400/60 transition-all disabled:opacity-60 text-sm"
+                  className="h-12 w-full rounded-[18px] bg-blue-700 text-sm font-bold text-white shadow-lg shadow-blue-900/15 transition-colors hover:bg-blue-800 disabled:opacity-60"
                 >
                   {processing ? "Processing..." : "Continue to Secure Payment"}
                 </button>
               )}
             </>
           )}
-        </div>
+        </section>
       </main>
 
       <Footer />

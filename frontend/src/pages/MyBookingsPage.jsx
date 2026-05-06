@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { CalendarDays, Search, TicketCheck } from "lucide-react";
 import Api from "../api/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -7,31 +8,30 @@ const getStatusStyles = (status = "") => {
   const normalized = String(status || "PENDING").toUpperCase();
 
   if (normalized === "CONFIRMED") {
-    return "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30";
+    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   }
 
   if (normalized === "REVIEW") {
-    return "bg-amber-500/15 text-amber-300 border border-amber-400/30";
+    return "bg-amber-50 text-amber-700 border border-amber-200";
   }
 
   if (normalized === "BLOCKED") {
-    return "bg-red-500/15 text-red-300 border border-red-400/30";
+    return "bg-red-50 text-red-700 border border-red-200";
   }
 
   if (normalized === "CANCELLED") {
-    return "bg-slate-500/15 text-slate-300 border border-slate-400/30";
+    return "bg-slate-100 text-slate-600 border border-slate-200";
   }
 
-  return "bg-cyan-500/15 text-cyan-300 border border-cyan-400/30";
+  return "bg-blue-50 text-blue-700 border border-blue-200";
 };
 
 const MyBookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("all"); // all | recent
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -95,194 +95,187 @@ const MyBookingsPage = () => {
   }, [bookings, query, filter]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
 
-      <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-10 pb-12 text-white">
-          <div className="mb-6">
-            <p className="inline-flex items-center gap-2 text-[11px] font-semibold text-cyan-300 uppercase tracking-[0.2em]">
-              <span className="h-px w-6 bg-cyan-400" />
-              Trips
-            </p>
+      <main className="mx-auto max-w-6xl px-4 pb-12 pt-10">
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/5 sm:p-7">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
+                <TicketCheck size={15} />
+                Trips
+              </p>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight">
+                My Bookings
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-slate-600">
+                Review your confirmed trips, status updates, and fare details.
+              </p>
+            </div>
 
-            <div className="mt-3 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                  My Bookings
-                </h1>
-                <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-                  View your confirmed trips, booking details, and history in one place.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full text-[11px] bg-white/5 border border-white/10 text-slate-200">
-                  Total:{" "}
-                  <span className="text-cyan-300 font-semibold">
-                    {loading ? "…" : bookings.length}
-                  </span>
-                </span>
-
-                <span className="px-3 py-1 rounded-full text-[11px] bg-white/5 border border-white/10 text-slate-200">
-                  Latest:{" "}
-                  <span className="text-slate-300 font-semibold">
-                    {loading
-                      ? "…"
-                      : latestBookingDate
-                      ? latestBookingDate.toLocaleDateString()
-                      : "—"}
-                  </span>
-                </span>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+                Total: {loading ? "..." : bookings.length}
+              </span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700">
+                Latest:{" "}
+                {loading
+                  ? "..."
+                  : latestBookingDate
+                  ? latestBookingDate.toLocaleDateString()
+                  : "-"}
+              </span>
             </div>
           </div>
 
-          <div className="bg-slate-900/80 rounded-3xl border border-white/10 shadow-lg shadow-emerald-500/20 p-4 sm:p-6">
-            <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-              <div className="flex-1">
-                <label className="text-[11px] font-semibold text-slate-200">
-                  Search
-                </label>
+          <div className="mt-7 grid gap-3 md:grid-cols-[1fr,auto] md:items-end">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                Search
+              </label>
+              <div className="relative mt-2">
+                <Search
+                  size={18}
+                  className="pointer-events-none absolute left-3 top-3.5 text-blue-700"
+                />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by route, operator, or status"
-                  className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/80 text-white placeholder:text-slate-500"
+                  className="h-12 w-full rounded-[18px] border border-slate-200 bg-white pl-10 pr-3 text-sm font-medium text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15"
                 />
               </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setFilter("all")}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${
-                    filter === "all"
-                      ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 border-transparent"
-                      : "border-white/10 text-slate-300 hover:bg-white/5"
-                  }`}
-                >
-                  All
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setFilter("recent")}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors ${
-                    filter === "recent"
-                      ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 border-transparent"
-                      : "border-white/10 text-slate-300 hover:bg-white/5"
-                  }`}
-                >
-                  Recent 30 Days
-                </button>
-              </div>
             </div>
 
-            <div className="mt-6">
-              {loading ? (
-                <p className="text-xs text-slate-400">Loading bookings...</p>
-              ) : error ? (
-                <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-5">
-                  <p className="text-sm text-red-200 font-semibold">
-                    Unable to load bookings
-                  </p>
-                  <p className="text-xs text-red-300/80 mt-1">{error}</p>
-                </div>
-              ) : filtered.length === 0 ? (
-                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-5">
-                  <p className="text-sm text-slate-300 font-semibold">
-                    No bookings found
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Try adjusting your search or filters.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                  {filtered.map((b) => {
-                    const from = b?.from || b?.route?.fromCity || "—";
-                    const to = b?.to || b?.route?.toCity || "—";
-                    const operator = b?.operator || b?.route?.operator || "—";
-                    const departure =
-                      b?.departureTime || b?.route?.departureTime || "—";
-                    const seats =
-                      Array.isArray(b?.seats) && b.seats.length
-                        ? b.seats.join(", ")
-                        : "—";
-                    const amount = Number(b?.totalAmount || 0).toLocaleString();
-                    const createdAt = b?.createdAt ? new Date(b.createdAt) : null;
-                    const status = String(b?.status || "PENDING").toUpperCase();
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setFilter("all")}
+                className={`rounded-full border px-4 py-2 text-xs font-bold transition-colors ${
+                  filter === "all"
+                    ? "border-blue-700 bg-blue-700 text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                All
+              </button>
 
-                    return (
-                      <div
-                        key={b?._id || `${from}-${to}-${b?.createdAt || "booking"}`}
-                        className="rounded-3xl bg-slate-950/60 border border-white/10 p-4"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-100">
-                              {from} <span className="text-slate-500">→</span> {to}
-                            </p>
-                            <p className="text-[11px] text-slate-400 mt-1">
-                              {operator} • Departure:{" "}
-                              <span className="text-slate-300 font-semibold">
-                                {departure}
-                              </span>
-                            </p>
-                          </div>
-
-                          <div className="text-right">
-                            <p className="text-cyan-300 font-extrabold text-sm">
-                              PKR {amount}
-                            </p>
-                            <span
-                              className={`inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${getStatusStyles(
-                                status
-                              )}`}
-                            >
-                              {status}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="mt-3 grid gap-2 sm:grid-cols-2 text-[11px] text-slate-400">
-                          <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                            <span className="text-slate-500">Seats:</span>{" "}
-                            <span className="text-slate-200 font-semibold">
-                              {seats}
-                            </span>
-                          </div>
-
-                          <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                            <span className="text-slate-500">Booked on:</span>{" "}
-                            <span className="text-slate-200 font-semibold">
-                              {createdAt && !isNaN(createdAt.getTime())
-                                ? `${createdAt.toLocaleDateString()} • ${createdAt.toLocaleTimeString()}`
-                                : "—"}
-                            </span>
-                          </div>
-                        </div>
-
-                        {status === "REVIEW" && (
-                          <p className="mt-3 text-[11px] text-amber-300">
-                            This booking is under review by fraud checks.
-                          </p>
-                        )}
-
-                        {status === "BLOCKED" && (
-                          <p className="mt-3 text-[11px] text-red-300">
-                            This booking was blocked for safety review.
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={() => setFilter("recent")}
+                className={`rounded-full border px-4 py-2 text-xs font-bold transition-colors ${
+                  filter === "recent"
+                    ? "border-blue-700 bg-blue-700 text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                Recent 30 Days
+              </button>
             </div>
           </div>
-        </div>
+
+          <div className="mt-7">
+            {loading ? (
+              <p className="text-sm font-medium text-slate-500">
+                Loading bookings...
+              </p>
+            ) : error ? (
+              <div className="rounded-3xl border border-red-100 bg-red-50 p-5">
+                <p className="text-sm font-bold text-red-700">
+                  Unable to load bookings
+                </p>
+                <p className="mt-1 text-xs text-red-600">{error}</p>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  No bookings found
+                </p>
+                <p className="mt-1 text-xs font-medium text-slate-500">
+                  Try adjusting your search or filters.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filtered.map((b) => {
+                  const from = b?.from || b?.route?.fromCity || "-";
+                  const to = b?.to || b?.route?.toCity || "-";
+                  const operator = b?.operator || b?.route?.operator || "-";
+                  const departure =
+                    b?.departureTime || b?.route?.departureTime || "-";
+                  const seats =
+                    Array.isArray(b?.seats) && b.seats.length
+                      ? b.seats.join(", ")
+                      : "-";
+                  const amount = Number(b?.totalAmount || 0).toLocaleString();
+                  const createdAt = b?.createdAt ? new Date(b.createdAt) : null;
+                  const status = String(b?.status || "PENDING").toUpperCase();
+
+                  return (
+                    <article
+                      key={b?._id || `${from}-${to}-${b?.createdAt || "booking"}`}
+                      className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5"
+                    >
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="text-base font-extrabold text-slate-950">
+                            {from} to {to}
+                          </p>
+                          <p className="mt-1 text-xs font-semibold text-slate-500">
+                            {operator} | Departure:{" "}
+                            <span className="text-slate-800">{departure}</span>
+                          </p>
+                        </div>
+
+                        <div className="sm:text-right">
+                          <p className="text-lg font-extrabold text-blue-700">
+                            PKR {amount}
+                          </p>
+                          <span
+                            className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[10px] font-extrabold ${getStatusStyles(
+                              status
+                            )}`}
+                          >
+                            {status}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600">
+                          Seats:{" "}
+                          <span className="font-bold text-slate-900">{seats}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600">
+                          <CalendarDays size={14} className="text-blue-700" />
+                          <span>
+                            {createdAt && !isNaN(createdAt.getTime())
+                              ? `${createdAt.toLocaleDateString()} ${createdAt.toLocaleTimeString()}`
+                              : "-"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {status === "REVIEW" && (
+                        <p className="mt-3 text-xs font-medium text-amber-700">
+                          This booking is under review by fraud checks.
+                        </p>
+                      )}
+
+                      {status === "BLOCKED" && (
+                        <p className="mt-3 text-xs font-medium text-red-700">
+                          This booking was blocked for safety review.
+                        </p>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
       </main>
 
       <Footer />
