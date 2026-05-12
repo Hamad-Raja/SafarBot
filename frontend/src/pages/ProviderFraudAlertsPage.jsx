@@ -170,89 +170,89 @@ const ProviderFraudAlertsPage = () => {
     const normalized = String(outcome).toUpperCase();
 
     if (normalized === "FRAUD") {
-      return "bg-red-500/20 text-red-300 border border-red-400/30";
+      return "bg-red-50 text-red-700 border border-red-200";
     }
 
     if (normalized === "LEGIT") {
-      return "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     }
 
-    return "bg-amber-500/20 text-amber-300 border border-amber-400/30";
+    return "bg-amber-50 text-amber-700 border border-amber-200";
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
 
       <main className="flex-1">
-        <div className="max-w-5xl mx-auto px-4 pt-8 pb-12 text-white">
+        <div className="max-w-5xl mx-auto px-4 pt-8 pb-12">
           <h1 className="text-xl font-extrabold mb-1">Risk & Alerts</h1>
-          <p className="text-xs text-slate-400 mb-4">
+          <p className="text-xs text-slate-600 mb-4">
             Automated alerts generated from booking behavior.
           </p>
 
           {!loading && !error && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400">Total Alerts</p>
-                  <p className="mt-1 text-xl font-extrabold text-white">
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500">Total Alerts</p>
+                  <p className="mt-1 text-xl font-extrabold text-slate-950">
                     {stats.totalAlerts}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400">Pending Reviews</p>
-                  <p className="mt-1 text-xl font-extrabold text-amber-300">
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500">Pending Reviews</p>
+                  <p className="mt-1 text-xl font-extrabold text-amber-700">
                     {stats.pendingReviews}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400">Fraud Marked</p>
-                  <p className="mt-1 text-xl font-extrabold text-red-300">
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500">Fraud Marked</p>
+                  <p className="mt-1 text-xl font-extrabold text-red-700">
                     {stats.fraudMarked}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400">Legit Marked</p>
-                  <p className="mt-1 text-xl font-extrabold text-emerald-300">
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500">Legit Marked</p>
+                  <p className="mt-1 text-xl font-extrabold text-emerald-700">
                     {stats.legitMarked}
                   </p>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400 mb-3">Risk Breakdown</p>
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500 mb-3">Risk Breakdown</p>
                   <div className="space-y-2 text-[12px]">
-                    <div className="flex justify-between text-red-300">
+                    <div className="flex justify-between text-red-700">
                       <span>High Risk</span>
                       <span>{stats.highRiskAlerts}</span>
                     </div>
-                    <div className="flex justify-between text-amber-300">
+                    <div className="flex justify-between text-amber-700">
                       <span>Medium Risk</span>
                       <span>{stats.mediumRiskAlerts}</span>
                     </div>
-                    <div className="flex justify-between text-emerald-300">
+                    <div className="flex justify-between text-emerald-700">
                       <span>Low Risk</span>
                       <span>{stats.lowRiskAlerts}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                  <p className="text-[11px] text-slate-400 mb-3">Top Reasons</p>
+                <div className="rounded-2xl border border-white/55 bg-white/60 p-4 shadow-lg shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+                  <p className="text-[11px] text-slate-500 mb-3">Top Reasons</p>
                   {stats.topReasons?.length ? (
                     <div className="space-y-2 text-[12px]">
                       {stats.topReasons.map((item, index) => (
                         <div
                           key={`${item.reason}-${index}`}
-                          className="flex justify-between text-slate-200"
+                          className="flex justify-between text-slate-700"
                         >
                           <span className="truncate pr-3">{item.reason}</span>
-                          <span className="text-cyan-300 font-semibold">
+                          <span className="text-blue-700 font-semibold">
                             {item.count}
                           </span>
                         </div>
@@ -266,17 +266,17 @@ const ProviderFraudAlertsPage = () => {
             </>
           )}
 
-          <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-6 space-y-3">
-            {loading && <p className="text-xs text-slate-300">Loading...</p>}
+          <div className="rounded-[2rem] border border-white/55 bg-white/55 p-6 space-y-3 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
+            {loading && <p className="text-xs text-slate-600">Loading...</p>}
 
             {!loading && error && (
               <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3">
-                <p className="text-xs text-red-200">{error}</p>
+                <p className="text-xs text-red-700">{error}</p>
               </div>
             )}
 
             {!loading && !error && alerts.length === 0 && (
-              <p className="text-xs text-slate-300">No fraud alerts.</p>
+              <p className="text-xs text-slate-600">No fraud alerts.</p>
             )}
 
             {!loading &&
@@ -308,18 +308,18 @@ const ProviderFraudAlertsPage = () => {
                 return (
                   <div
                     key={a._id}
-                    className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3 text-xs"
+                    className="rounded-2xl border border-white/60 bg-white/65 px-4 py-3 text-xs shadow-sm shadow-blue-900/5 backdrop-blur-xl"
                   >
                     <div className="flex flex-wrap justify-between items-center gap-3 mb-1">
-                      <p className="font-semibold text-slate-200">{title}</p>
+                      <p className="font-semibold text-slate-900">{title}</p>
 
                       <div className="flex items-center gap-2">
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] ${severity === "high"
-                            ? "bg-red-500/20 text-red-300"
+                            ? "bg-red-50 text-red-700"
                             : severity === "medium"
-                              ? "bg-amber-500/20 text-amber-300"
-                              : "bg-emerald-500/20 text-emerald-300"
+                              ? "bg-amber-50 text-amber-700"
+                              : "bg-emerald-50 text-emerald-700"
                             }`}
                         >
                           {severity.toUpperCase()}
@@ -335,17 +335,17 @@ const ProviderFraudAlertsPage = () => {
                       </div>
                     </div>
 
-                    <p className="text-[11px] text-slate-300 mb-2">{detail}</p>
+                    <p className="text-[11px] text-slate-600 mb-2">{detail}</p>
 
                     {!!a?.reasons?.length && (
-                      <p className="text-[11px] text-slate-400 mb-3">
+                      <p className="text-[11px] text-slate-500 mb-3">
                         Reasons: {a.reasons.join(", ")}
                       </p>
                     )}
 
                     <div className="grid gap-3 md:grid-cols-[180px,1fr,auto] items-start">
                       <div>
-                        <label className="block text-[11px] text-slate-400 mb-1">
+                        <label className="block text-[11px] text-slate-600 mb-1">
                           Review outcome
                         </label>
                         <select
@@ -353,7 +353,7 @@ const ProviderFraudAlertsPage = () => {
                           onChange={(e) =>
                             updateReviewForm(a._id, "reviewOutcome", e.target.value)
                           }
-                          className="w-full rounded-xl bg-slate-900 border border-white/10 px-3 py-2 text-[12px] text-white outline-none"
+                          className="w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-[12px] text-slate-950 outline-none focus:ring-2 focus:ring-blue-500/50"
                         >
                           <option value="PENDING">Pending</option>
                           <option value="FRAUD">Fraud</option>
@@ -362,7 +362,7 @@ const ProviderFraudAlertsPage = () => {
                       </div>
 
                       <div>
-                        <label className="block text-[11px] text-slate-400 mb-1">
+                        <label className="block text-[11px] text-slate-600 mb-1">
                           Notes
                         </label>
                         <textarea
@@ -372,7 +372,7 @@ const ProviderFraudAlertsPage = () => {
                             updateReviewForm(a._id, "reviewNotes", e.target.value)
                           }
                           placeholder="Add optional review notes..."
-                          className="w-full rounded-xl bg-slate-900 border border-white/10 px-3 py-2 text-[12px] text-white outline-none resize-none"
+                          className="w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-[12px] text-slate-950 placeholder:text-slate-400 outline-none resize-none focus:ring-2 focus:ring-blue-500/50"
                         />
                       </div>
 
@@ -380,7 +380,7 @@ const ProviderFraudAlertsPage = () => {
                         <button
                           onClick={() => submitReview(a._id)}
                           disabled={reviewingId === a._id}
-                          className="text-[10px] px-3 py-2 rounded-full border border-cyan-400/60 text-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-[10px] px-3 py-2 rounded-full border border-blue-200 bg-blue-50 font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {reviewingId === a._id ? "Saving..." : "Save Review"}
                         </button>
@@ -390,10 +390,10 @@ const ProviderFraudAlertsPage = () => {
                     {(a?.reviewed ||
                       a?.reviewOutcome === "FRAUD" ||
                       a?.reviewOutcome === "LEGIT") && (
-                        <div className="mt-3 text-[11px] text-slate-400">
+                        <div className="mt-3 text-[11px] text-slate-500">
                           <p>
                             Reviewed:{" "}
-                            <span className="text-slate-200 font-medium">
+                            <span className="text-slate-800 font-medium">
                               {a?.reviewedAt
                                 ? new Date(a.reviewedAt).toLocaleString()
                                 : "Yes"}
@@ -403,7 +403,7 @@ const ProviderFraudAlertsPage = () => {
                           {reviewedByName && (
                             <p className="mt-1">
                               Reviewed by:{" "}
-                              <span className="text-slate-200 font-medium">
+                              <span className="text-slate-800 font-medium">
                                 {reviewedByName}
                               </span>
                             </p>

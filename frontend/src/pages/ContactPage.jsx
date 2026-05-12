@@ -23,7 +23,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
 
       <main className="mx-auto max-w-6xl px-4 pb-14 pt-10">

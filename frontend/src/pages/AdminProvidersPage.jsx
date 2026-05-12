@@ -55,14 +55,14 @@ const AdminProvidersPage = () => {
 
   const statusBadge = (status) => {
     if (status === "active")
-      return "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     if (status === "pending")
-      return "bg-amber-500/15 text-amber-300 border border-amber-400/30";
+      return "bg-amber-50 text-amber-700 border border-amber-200";
     if (status === "suspended")
-      return "bg-red-500/15 text-red-300 border border-red-400/30";
+      return "bg-red-50 text-red-700 border border-red-200";
     if (status === "rejected")
-      return "bg-rose-500/15 text-rose-300 border border-rose-400/30";
-    return "bg-slate-500/15 text-slate-300 border border-slate-400/30";
+      return "bg-rose-50 text-rose-700 border border-rose-200";
+    return "bg-slate-100 text-slate-600 border border-slate-200";
   };
 
   const providerStatus = (p) => {
@@ -132,7 +132,7 @@ const AdminProvidersPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
 
       {selectedProvider && (
@@ -142,15 +142,15 @@ const AdminProvidersPage = () => {
             onClick={() => setSelectedProvider(null)}
           />
 
-          <div className="relative w-full max-w-2xl rounded-3xl border border-cyan-500/30 bg-slate-900 shadow-2xl shadow-cyan-500/20 overflow-hidden">
-            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-white/10 bg-slate-950/40">
+          <div className="relative w-full max-w-2xl rounded-3xl border border-white/60 bg-white shadow-2xl shadow-slate-900/20 overflow-hidden">
+            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-200 bg-blue-50/70">
               <div className="min-w-0">
-                <h2 className="text-lg md:text-xl font-extrabold text-white truncate">
+                <h2 className="text-lg md:text-xl font-extrabold text-slate-950 truncate">
                   {selectedProvider.companyName ||
                     selectedProvider.name ||
                     "Provider Details"}
                 </h2>
-                <p className="mt-1 text-[11px] text-slate-400 truncate">
+                <p className="mt-1 text-[11px] text-slate-500 truncate">
                   {selectedProvider.email || "—"}
                 </p>
               </div>
@@ -167,7 +167,7 @@ const AdminProvidersPage = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedProvider(null)}
-                  className="h-9 w-9 rounded-2xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+                  className="h-9 w-9 rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
                   aria-label="Close"
                 >
                   ✕
@@ -177,43 +177,43 @@ const AdminProvidersPage = () => {
 
             <div className="px-6 py-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                  <p className="text-[12px] font-semibold text-slate-200 mb-3">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-[12px] font-semibold text-slate-900 mb-3">
                     Contact
                   </p>
 
-                  <div className="space-y-2 text-xs text-slate-300">
+                  <div className="space-y-2 text-xs text-slate-700">
                     <p>
-                      <span className="text-slate-400">Contact:</span>{" "}
+                      <span className="text-slate-500">Contact:</span>{" "}
                       {selectedProvider.contactNumber || "—"}
                     </p>
                     <p>
-                      <span className="text-slate-400">City:</span>{" "}
+                      <span className="text-slate-500">City:</span>{" "}
                       {selectedProvider.city || "—"}
                     </p>
                     <p>
-                      <span className="text-slate-400">Address:</span>{" "}
+                      <span className="text-slate-500">Address:</span>{" "}
                       {selectedProvider.businessAddress || "—"}
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                  <p className="text-[12px] font-semibold text-slate-200 mb-3">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-[12px] font-semibold text-slate-900 mb-3">
                     Verification
                   </p>
 
-                  <div className="space-y-2 text-xs text-slate-300">
+                  <div className="space-y-2 text-xs text-slate-700">
                     <p>
-                      <span className="text-slate-400">CNIC:</span>{" "}
+                      <span className="text-slate-500">CNIC:</span>{" "}
                       {selectedProvider.cnic || "—"}
                     </p>
                     <p>
-                      <span className="text-slate-400">License:</span>{" "}
+                      <span className="text-slate-500">License:</span>{" "}
                       {selectedProvider.licenseNumber || "—"}
                     </p>
                     <p>
-                      <span className="text-slate-400">Fleet Size:</span>{" "}
+                      <span className="text-slate-500">Fleet Size:</span>{" "}
                       {selectedProvider.fleetSize ?? "—"}
                     </p>
                   </div>
@@ -221,11 +221,11 @@ const AdminProvidersPage = () => {
               </div>
 
               {selectedProvider.rejectionReason && (
-                <div className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
-                  <p className="text-[12px] font-semibold text-rose-200 mb-1">
+                <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                  <p className="text-[12px] font-semibold text-rose-700 mb-1">
                     Rejection Reason
                   </p>
-                  <p className="text-xs text-rose-100/90">
+                  <p className="text-xs text-rose-700/90">
                     {selectedProvider.rejectionReason}
                   </p>
                 </div>
@@ -235,7 +235,7 @@ const AdminProvidersPage = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedProvider(null)}
-                  className="px-4 py-2 rounded-2xl bg-slate-800 border border-white/10 text-slate-200 hover:bg-slate-700 transition text-sm"
+                  className="px-4 py-2 rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 text-sm"
                 >
                   Close
                 </button>
@@ -248,7 +248,7 @@ const AdminProvidersPage = () => {
                         await approve(selectedProvider._id);
                         setSelectedProvider(null);
                       }}
-                      className="px-4 py-2 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25 transition text-sm"
+                      className="px-4 py-2 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100 text-sm"
                     >
                       Approve
                     </button>
@@ -259,7 +259,7 @@ const AdminProvidersPage = () => {
                         await reject(selectedProvider._id);
                         setSelectedProvider(null);
                       }}
-                      className="px-4 py-2 rounded-2xl bg-rose-500/15 border border-rose-400/30 text-rose-200 hover:bg-rose-500/25 transition text-sm"
+                      className="px-4 py-2 rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 transition hover:bg-rose-100 text-sm"
                     >
                       Reject
                     </button>
@@ -273,7 +273,7 @@ const AdminProvidersPage = () => {
                       await suspend(selectedProvider._id);
                       setSelectedProvider(null);
                     }}
-                    className="px-4 py-2 rounded-2xl bg-red-500/15 border border-red-400/30 text-red-200 hover:bg-red-500/25 transition text-sm"
+                    className="px-4 py-2 rounded-2xl border border-red-200 bg-red-50 text-red-700 transition hover:bg-red-100 text-sm"
                   >
                     Suspend
                   </button>
@@ -286,7 +286,7 @@ const AdminProvidersPage = () => {
                       await approve(selectedProvider._id);
                       setSelectedProvider(null);
                     }}
-                    className="px-4 py-2 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25 transition text-sm"
+                    className="px-4 py-2 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100 text-sm"
                   >
                     Re-Activate
                   </button>
@@ -298,11 +298,11 @@ const AdminProvidersPage = () => {
       )}
 
       <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4">
             <div>
               <h1 className="text-xl font-extrabold">Manage Providers</h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600">
                 Approve, reject, suspend or review operators on the platform.
               </p>
             </div>
@@ -312,13 +312,13 @@ const AdminProvidersPage = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search provider..."
-                className="w-full sm:w-64 rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                className="w-full sm:w-64 rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
 
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                className="rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -329,14 +329,14 @@ const AdminProvidersPage = () => {
             </div>
           </div>
 
-          <div className="bg-slate-900/80 rounded-3xl border border-white/10 shadow-lg shadow-cyan-500/10 p-5 overflow-x-auto">
+          <div className="rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl overflow-x-auto">
             {loading ? (
-              <div className="py-10 text-center text-slate-400 text-sm">
+              <div className="py-10 text-center text-slate-500 text-sm">
                 Loading providers...
               </div>
             ) : (
               <table className="min-w-full text-xs">
-                <thead className="text-slate-400 border-b border-white/10">
+                <thead className="text-slate-500 border-b border-slate-200/70">
                   <tr>
                     <th className="py-2 text-left">Provider</th>
                     <th className="py-2 text-left">Routes</th>
@@ -350,15 +350,15 @@ const AdminProvidersPage = () => {
                     const status = providerStatus(p);
 
                     return (
-                      <tr key={p._id} className="border-b border-white/5">
-                        <td className="py-3 pr-3 text-slate-100 font-semibold">
+                      <tr key={p._id} className="border-b border-slate-200/60">
+                        <td className="py-3 pr-3 text-slate-900 font-semibold">
                           {p.companyName || p.name || "—"}
                           <div className="text-[10px] text-slate-500 font-normal">
                             {p.email}
                           </div>
                         </td>
 
-                        <td className="py-3 pr-3 text-slate-300">
+                        <td className="py-3 pr-3 text-slate-700">
                           {countRoutes(p)}
                         </td>
 
@@ -376,7 +376,7 @@ const AdminProvidersPage = () => {
                           <button
                             type="button"
                             onClick={() => view(p)}
-                            className="px-3 py-1 rounded-full bg-slate-800 border border-white/15 text-slate-100 hover:bg-slate-700"
+                            className="px-3 py-1 rounded-full border border-slate-200 bg-white/70 text-slate-700 hover:bg-white"
                           >
                             View
                           </button>
@@ -386,7 +386,7 @@ const AdminProvidersPage = () => {
                               <button
                                 type="button"
                                 onClick={() => approve(p._id)}
-                                className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25"
+                                className="px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                               >
                                 Approve
                               </button>
@@ -394,7 +394,7 @@ const AdminProvidersPage = () => {
                               <button
                                 type="button"
                                 onClick={() => reject(p._id)}
-                                className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-400/30 text-rose-200 hover:bg-rose-500/25"
+                                className="px-3 py-1 rounded-full border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
                               >
                                 Reject
                               </button>
@@ -405,7 +405,7 @@ const AdminProvidersPage = () => {
                             <button
                               type="button"
                               onClick={() => suspend(p._id)}
-                              className="px-3 py-1 rounded-full bg-red-500/15 border border-red-400/30 text-red-200 hover:bg-red-500/25"
+                              className="px-3 py-1 rounded-full border border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
                             >
                               Suspend
                             </button>
@@ -415,7 +415,7 @@ const AdminProvidersPage = () => {
                             <button
                               type="button"
                               onClick={() => approve(p._id)}
-                              className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25"
+                              className="px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                             >
                               Re-Activate
                             </button>

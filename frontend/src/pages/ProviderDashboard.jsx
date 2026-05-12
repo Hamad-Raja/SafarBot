@@ -63,7 +63,7 @@ const ProviderDashboard = () => {
   }, [routes]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-white text-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
       <main className="flex-1">
         <div className="max-w-6xl mx-auto px-4 pt-6 pb-10">

@@ -180,7 +180,7 @@ const AdminDashboard = () => {
   }, [delayRoutes]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-white text-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
 
       <main className="flex-1">

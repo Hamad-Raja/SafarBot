@@ -22,13 +22,13 @@ const fraudAlertRoutes = require("./routes/fraudAlertRoutes");
 const insightsRoutes = require("./routes/insightsRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 app.set("trust proxy", 1);
 
 const allowedOrigins = (
   process.env.CORS_ORIGIN ||
-  "http://localhost:5173,http://localhost:3000,https://safar-bot.vercel.app"
+  "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000,https://safar-bot.vercel.app"
 )
   .split(",")
   .map((origin) => origin.trim())
