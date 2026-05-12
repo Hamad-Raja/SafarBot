@@ -238,14 +238,14 @@ const ProviderRoutesPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
       <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
             <div>
               <h1 className="text-xl font-extrabold">Routes Management</h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600">
                 Add routes, control availability, manage pricing & capacity, and
                 review delay insights.
               </p>
@@ -255,29 +255,29 @@ const ProviderRoutesPage = () => {
             </div>
 
             <div className="w-full sm:w-72">
-              <label className="text-[11px] font-semibold text-slate-300">
+              <label className="text-[11px] font-semibold text-slate-700">
                 Search routes
               </label>
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g., islamabad lahore 09:00"
-                className="mt-1 w-full rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.25fr,0.75fr]">
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
+            <div className="rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold">Your Routes</h2>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-500">
                   {filtered.length} route(s)
                 </span>
               </div>
 
               {filtered.length === 0 ? (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   No routes found. Try a different search.
                 </p>
               ) : (
@@ -289,17 +289,17 @@ const ProviderRoutesPage = () => {
                     return (
                       <div
                         key={r._id}
-                        className="bg-slate-950/60 rounded-2xl border border-white/10 px-4 py-3"
+                        className="rounded-2xl border border-white/60 bg-white/65 px-4 py-3 shadow-sm shadow-blue-900/5 backdrop-blur-xl"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                           <div>
-                            <p className="text-slate-100 font-semibold">
+                            <p className="text-slate-900 font-semibold">
                               {r.fromCity} → {r.toCity}
                             </p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">
+                            <p className="text-[11px] text-slate-600 mt-0.5">
                               Departure: {r.departureTime} • Seats:{" "}
                               {r.availableSeats} • Fare:
-                              <span className="text-cyan-300 font-semibold">
+                              <span className="text-blue-700 font-semibold">
                                 {" "}
                                 PKR {Number(r.price).toLocaleString()}
                               </span>
@@ -318,8 +318,8 @@ const ProviderRoutesPage = () => {
                             <span
                               className={`px-2 py-0.5 rounded-full text-[10px] border ${
                                 r.active
-                                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
-                                  : "bg-slate-800 text-slate-300 border-slate-600/60"
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : "bg-slate-100 text-slate-600 border-slate-200"
                               }`}
                             >
                               {r.active ? "Active" : "Paused"}
@@ -329,7 +329,7 @@ const ProviderRoutesPage = () => {
                               type="button"
                               onClick={() => handleCheckInsights(r)}
                               disabled={loading || insightsLoading}
-                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-400/50 text-amber-200 hover:bg-amber-500/10 disabled:opacity-50"
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-50"
                             >
                               {insightsLoading
                                 ? "Loading..."
@@ -342,7 +342,7 @@ const ProviderRoutesPage = () => {
                               type="button"
                               onClick={() => toggle(r._id, r.active)}
                               disabled={loading}
-                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 disabled:opacity-50"
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50"
                             >
                               {r.active ? "Pause" : "Activate"}
                             </button>
@@ -351,7 +351,7 @@ const ProviderRoutesPage = () => {
                               type="button"
                               onClick={() => remove(r._id)}
                               disabled={loading}
-                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-400/60 text-red-200 hover:bg-red-500/10 disabled:opacity-50"
+                              className="px-3 py-1 rounded-full text-[10px] font-semibold border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-50"
                             >
                               Remove
                             </button>
@@ -368,23 +368,23 @@ const ProviderRoutesPage = () => {
                   type="button"
                   onClick={fetchRoutes}
                   disabled={loading}
-                  className="px-4 py-2 rounded-2xl bg-slate-950/70 border border-white/10 text-xs text-slate-200 hover:bg-slate-950 disabled:opacity-50"
+                  className="px-4 py-2 rounded-2xl border border-white/60 bg-white/65 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-white disabled:opacity-50"
                 >
                   Refresh
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 p-5">
+            <div className="rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
               <h2 className="text-sm font-semibold mb-1">Add New Route</h2>
-              <p className="text-[11px] text-slate-400 mb-4">
+              <p className="text-[11px] text-slate-500 mb-4">
                 Create a route with one departure.
               </p>
 
               <form onSubmit={addRoute} className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       From
                     </label>
                     <input
@@ -392,11 +392,11 @@ const ProviderRoutesPage = () => {
                       value={form.from}
                       onChange={handleChange}
                       placeholder="Islamabad"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       To
                     </label>
                     <input
@@ -404,13 +404,13 @@ const ProviderRoutesPage = () => {
                       value={form.to}
                       onChange={handleChange}
                       placeholder="Lahore"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-200">
+                  <label className="text-[11px] font-semibold text-slate-700">
                     Departure Time
                   </label>
                   <input
@@ -418,13 +418,13 @@ const ProviderRoutesPage = () => {
                     value={form.departure}
                     onChange={handleChange}
                     placeholder="09:00 AM"
-                    className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                    className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       Fare (PKR)
                     </label>
                     <input
@@ -434,11 +434,11 @@ const ProviderRoutesPage = () => {
                       type="number"
                       min="1"
                       placeholder="2500"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       Seats
                     </label>
                     <input
@@ -448,14 +448,14 @@ const ProviderRoutesPage = () => {
                       type="number"
                       min="1"
                       placeholder="40"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       Travel Date (optional)
                     </label>
                     <input
@@ -463,11 +463,11 @@ const ProviderRoutesPage = () => {
                       value={form.travelDate}
                       onChange={handleChange}
                       type="date"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-200">
+                    <label className="text-[11px] font-semibold text-slate-700">
                       Operator (optional)
                     </label>
                     <input
@@ -475,13 +475,13 @@ const ProviderRoutesPage = () => {
                       value={form.operator}
                       onChange={handleChange}
                       placeholder="Faisal Movers"
-                      className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                      className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-200">
+                  <label className="text-[11px] font-semibold text-slate-700">
                     Bus Name (optional)
                   </label>
                   <input
@@ -489,14 +489,14 @@ const ProviderRoutesPage = () => {
                     value={form.busName}
                     onChange={handleChange}
                     placeholder="FM Luxury"
-                    className="mt-1 w-full rounded-2xl bg-slate-950/60 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                    className="mt-1 w-full rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-2 bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-semibold rounded-2xl py-2.5 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-shadow disabled:opacity-50"
+                  className="w-full mt-2 rounded-2xl bg-slate-950 py-2.5 font-semibold text-white shadow-lg shadow-slate-900/15 transition-colors hover:bg-blue-800 disabled:opacity-50"
                 >
                   {loading ? "Saving..." : "Add Route"}
                 </button>

@@ -43,14 +43,14 @@ const AdminReportsPage = () => {
   }, [range]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-blue-50 to-white text-slate-950">
       <Navbar />
       <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-12">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4">
             <div>
               <h1 className="text-xl font-extrabold">Reports &amp; Analytics</h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600">
                 Revenue trends and route performance.
               </p>
             </div>
@@ -59,7 +59,7 @@ const AdminReportsPage = () => {
               <select
                 value={range}
                 onChange={(e) => setRange(e.target.value)}
-                className="rounded-2xl bg-slate-900/70 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/70"
+                className="rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-slate-950 shadow-sm shadow-blue-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
@@ -70,7 +70,7 @@ const AdminReportsPage = () => {
               <button
                 type="button"
                 onClick={() => toast.success("Export feature not connected")}
-                className="px-4 py-2 rounded-2xl bg-slate-900/70 border border-white/10 text-sm font-semibold text-slate-200 hover:bg-slate-900 transition-colors"
+                className="px-4 py-2 rounded-2xl border border-white/60 bg-white/70 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-white"
               >
                 Export CSV
               </button>
@@ -78,10 +78,10 @@ const AdminReportsPage = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 shadow-lg shadow-cyan-500/10 p-4">
+            <div className="rounded-[2rem] border border-white/55 bg-white/55 p-4 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold">Revenue Trend (PKR)</h2>
-                <span className="text-[11px] text-slate-400">Range: {range}</span>
+                <span className="text-[11px] text-slate-500">Range: {range}</span>
               </div>
 
               <div className="h-56">
@@ -90,21 +90,21 @@ const AdminReportsPage = () => {
                     data={revenueData}
                     margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} />
-                    <YAxis stroke="#94a3b8" fontSize={10} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
+                    <XAxis dataKey="month" stroke="#64748b" fontSize={10} />
+                    <YAxis stroke="#64748b" fontSize={10} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#020617",
-                        border: "1px solid #22d3ee",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #bfdbfe",
                         fontSize: 10,
                       }}
-                      labelStyle={{ color: "#e5e7eb" }}
+                      labelStyle={{ color: "#0f172a" }}
                     />
                     <Line
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#22d3ee"
+                      stroke="#1d4ed8"
                       strokeWidth={2}
                       dot={{ r: 3 }}
                     />
@@ -113,10 +113,10 @@ const AdminReportsPage = () => {
               </div>
             </div>
 
-            <div className="bg-slate-900/80 rounded-3xl border border-white/10 shadow-lg shadow-emerald-500/10 p-4">
+            <div className="rounded-[2rem] border border-white/55 bg-white/55 p-4 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold">Bookings by Route</h2>
-                <span className="text-[11px] text-slate-400">Range: {range}</span>
+                <span className="text-[11px] text-slate-500">Range: {range}</span>
               </div>
 
               <div className="h-56">
@@ -125,16 +125,16 @@ const AdminReportsPage = () => {
                     data={bookingsData}
                     margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="route" stroke="#94a3b8" fontSize={10} />
-                    <YAxis stroke="#94a3b8" fontSize={10} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
+                    <XAxis dataKey="route" stroke="#64748b" fontSize={10} />
+                    <YAxis stroke="#64748b" fontSize={10} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#020617",
-                        border: "1px solid #22c55e",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #bbf7d0",
                         fontSize: 10,
                       }}
-                      labelStyle={{ color: "#e5e7eb" }}
+                      labelStyle={{ color: "#0f172a" }}
                     />
                     <Bar dataKey="bookings" fill="#22c55e" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -143,9 +143,9 @@ const AdminReportsPage = () => {
             </div>
           </div>
 
-          <div className="mt-6 bg-slate-900/80 rounded-3xl border border-white/10 p-5 shadow-lg shadow-cyan-500/10 text-xs text-slate-300">
-            <p className="font-semibold text-slate-100 mb-1">Notes</p>
-            <p className="text-slate-400">
+          <div className="mt-6 rounded-[2rem] border border-white/55 bg-white/55 p-5 shadow-xl shadow-blue-900/10 ring-1 ring-white/30 backdrop-blur-2xl text-xs text-slate-700">
+            <p className="font-semibold text-slate-900 mb-1">Notes</p>
+            <p className="text-slate-600">
               Charts are generated from real booking and revenue data.
             </p>
           </div>
